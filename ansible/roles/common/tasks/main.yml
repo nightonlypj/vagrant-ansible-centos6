@@ -1,0 +1,137 @@
+### yum ###
+- name: yum -y groupinstall "Development Tools"
+  yum: name="@Development Tools" state=present
+
+- name: yum -y groupinstall "Base"
+  yum: name="@Base" state=present
+
+- name: yum -y install ftp logwatch nc screen telnet
+  yum: name={{ item }} state=present
+  with_items:
+    - ftp
+    - logwatch
+    - nc
+    - screen
+    - telnet
+
+- import_tasks: roles/common/tasks/epel.yml
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y --enablerepo=epel install nkf
+  yum: name=nkf state=present enablerepo=epel
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y install http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm
+  yum: name=http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm state=present
+
+### service ###
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service abrt-ccpp stop; chkconfig abrt-ccpp off
+  service: name=abrt-ccpp state=stopped enabled=no
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service abrt-oops stop; chkconfig abrt-oops off
+  service: name=abrt-oops state=stopped enabled=no
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service abrtd stop; chkconfig abrtd off
+  service: name=abrtd state=stopped enabled=no
+- name: service acpid stop; chkconfig acpid off
+  service: name=acpid state=stopped enabled=no
+- name: service atd stop; chkconfig atd off
+  service: name=atd state=stopped enabled=no
+- name: service auditd stop; chkconfig auditd off
+  service: name=auditd state=stopped enabled=no
+- name: service blk-availability stop; chkconfig blk-availability off
+  service: name=blk-availability state=stopped enabled=no
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service cpuspeed stop; chkconfig cpuspeed off
+  service: name=cpuspeed state=stopped enabled=no
+- name: service lvm2-monitor stop; chkconfig lvm2-monitor off
+  service: name=lvm2-monitor state=stopped enabled=no
+- name: service mdmonitor stop; chkconfig mdmonitor off
+  service: name=mdmonitor state=stopped enabled=no
+- name: service netfs stop; chkconfig netfs off
+  service: name=netfs state=stopped enabled=no
+- name: service ntpdate stop; chkconfig ntpdate off
+  service: name=ntpdate state=stopped enabled=no
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service restorecond stop; chkconfig restorecond off
+  service: name=restorecond enabled=no
+  # Tips: state=stopped -> failed determining service state, possible typo of service name?
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service smartd stop; chkconfig smartd off
+  service: name=smartd state=stopped enabled=no
+- name: service udev-post stop; chkconfig udev-post off
+  service: name=udev-post state=stopped enabled=no
+
+- name: service crond start; chkconfig crond on
+  service: name=crond state=started enabled=yes
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service haldaemon start; chkconfig haldaemon on
+  service: name=haldaemon state=started enabled=yes
+- name: service irqbalance start; chkconfig irqbalance on
+  service: name=irqbalance state=started enabled=yes
+- name: service messagebus start; chkconfig messagebus on
+  service: name=messagebus state=started enabled=yes
+- name: service psacct start; chkconfig psacct on
+  service: name=psacct state=started enabled=yes
+- name: service rsyslog start; chkconfig rsyslog on
+  service: name=rsyslog state=started enabled=yes
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service sysstat start; chkconfig sysstat on
+  service: name=sysstat state=started enabled=yes
+
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/common/templates/etc/{hosts,hosts.allow,hosts.deny,sysctl.conf,logrotate.conf} ./; chmod 644 {hosts,hosts.allow,hosts.deny,sysctl.conf,logrotate.conf}; chown root:root {hosts,hosts.allow,hosts.deny,sysctl.conf,logrotate.conf}
+  template: src={{ item }} dest="/etc/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/hosts"
+    - "templates/etc/hosts.allow"
+    - "templates/etc/hosts.deny"
+    - "templates/etc/sysctl.conf"
+    - "templates/etc/logrotate.conf"
+- name: cd /etc; cp /vagrant/ansible/roles/common/templates/etc/sudoers ./; chmod 440 sudoers; chown root:root sudoers
+  template: src="templates/etc/sudoers" dest="/etc/" mode=440 owner=root group=root backup=yes
+
+- name: ln -sfn /usr/share/zoneinfo/{{ localtime }} /etc/localtime
+  file: src="/usr/share/zoneinfo/{{ localtime }}" dest="/etc/localtime" state=link force=yes
+- name: cd /etc/sysconfig; cp /vagrant/ansible/roles/common/templates/etc/sysconfig/{clock,keyboard,init,i18n} ./; chmod 644 {clock,keyboard,init,i18n}; chown root:root {clock,keyboard,init,i18n}
+  template: src={{ item }} dest="/etc/sysconfig/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/sysconfig/clock"
+    - "templates/etc/sysconfig/keyboard"
+    - "templates/etc/sysconfig/init"
+    - "templates/etc/sysconfig/i18n"
+- name: cd /etc/security; cp /vagrant/ansible/roles/common/templates/etc/security/limits.conf ./; chmod 644 limits.conf; chown root:root limits.conf
+  template: src="templates/etc/security/limits.conf" dest="/etc/security/" mode=644 owner=root group=root backup=yes
+- name: cd /etc/pam.d; cp /vagrant/ansible/roles/common/templates/etc/pam.d/su ./; chmod 644 su; chown root:root su
+  template: src="templates/etc/pam.d/su" dest="/etc/pam.d/" mode=644 owner=root group=root backup=yes
+
+### aliases ###
+- name: cd /etc; cp /vagrant/ansible/roles/common/templates/etc/aliases ./; chmod 644 aliases; chown root:root aliases
+  template: src="templates/etc/aliases" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: newaliases
+
+### cron ###
+- when: hosts_env != 'development'
+  name: (!development) crontab <- Rebooted notice
+  cron:
+    name: Rebooted notice
+    special_time: reboot
+    job: (date; echo -e "\n- dmesg -"; dmesg; echo -e "\n- /var/log/messages -"; tail -100 /var/log/messages) | mail -s "Rebooted notice of `hostname`" -r crond warning
+
+### iptables ###
+- name: cd /etc/sysconfig; cp /vagrant/ansible/roles/common/templates/etc/sysconfig/iptables{,-config} ./; chmod 600 iptables{,-config}; chown root:root iptables{,-config}
+  template: src={{ item }} dest="/etc/sysconfig/" mode=600 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/sysconfig/iptables"
+    - "templates/etc/sysconfig/iptables-config"
+  notify: service iptables restart
+- name: cd /etc/sysconfig; cp /vagrant/ansible/roles/common/templates/etc/sysconfig/ip6tables{,-config} ./; chmod 600 ip6tables{,-config}; chown root:root ip6tables{,-config}
+  template: src={{ item }} dest="/etc/sysconfig/" mode=600 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/sysconfig/ip6tables"
+    - "templates/etc/sysconfig/ip6tables-config"
+  notify: service ip6tables restart
+
+- name: service iptables start; chkconfig iptables on
+  service: name=iptables state=started enabled=yes
+- name: service ip6tables start; chkconfig ip6tables on
+  service: name=ip6tables state=started enabled=yes

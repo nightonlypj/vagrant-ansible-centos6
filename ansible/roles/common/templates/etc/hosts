@@ -1,0 +1,8 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+### START ###
+{% if ansible_distribution == 'CentOS' %}
+#::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+{% elif ansible_distribution == 'Amazon' %}
+#::1         localhost6 localhost6.localdomain6
+{% endif %}
+### END ###

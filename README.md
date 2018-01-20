@@ -1,4 +1,6 @@
-# CentOS6 Vagrantfile提供
+# CentOS6 Vagrantfile＋Ansible playbook提供
+
+Amazon Linux(EC2/Lightsail)対応
 
 ## 前提条件
 
@@ -54,4 +56,6 @@ $ ssh admin@127.0.0.1 -p 2206
 : abc123
 $ su -
 : xyz789
+# cd /vagrant/ansible
+# ansible-playbook playbook.yml -i hosts/development -l development
 ```

@@ -1,0 +1,9 @@
+{% if ansible_distribution == 'Amazon' %}
+### START ###
+#ZONE="UTC"
+{% endif %}
+ZONE="{{ clock_zone }}"
+{% if ansible_distribution == 'Amazon' %}
+#UTC=true
+### END ###
+{% endif %}

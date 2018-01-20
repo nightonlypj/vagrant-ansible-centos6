@@ -1,0 +1,12 @@
+{% if ansible_distribution == 'Amazon' %}
+### START ###
+#KEYBOARDTYPE="pc"
+#KEYTABLE="us"
+{% endif %}
+KEYTABLE="{{ keyboard_keytable }}"
+MODEL="{{ keyboard_model }}"
+LAYOUT="{{ keyboard_layout }}"
+KEYBOARDTYPE="pc"
+{% if ansible_distribution == 'Amazon' %}
+### END ###
+{% endif %}

@@ -1,0 +1,26 @@
+[development]
+localhost ansible_connection=local
+
+[all:vars]
+ansible_ssh_port=22
+#ansible_ssh_user=ansible
+hosts_env=development
+hosts_allow_sshd=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0
+### system ###
+localtime=Japan
+clock_zone=Asia/Tokyo
+i18n_lang=ja_JP.UTF-8
+keyboard_keytable=jp106
+keyboard_model=jp106
+keyboard_layout=jp
+### aliases ###
+aliases_notice=admin@mydomain
+aliases_warning=admin@mydomain
+aliases_critical=admin@mydomain
+### ntpd ###
+# Use CentOS default
+ntpd_server1=0.centos.pool.ntp.org
+ntpd_server2=1.centos.pool.ntp.org
+ntpd_server3=2.centos.pool.ntp.org
+ntpd_server4=3.centos.pool.ntp.org
+### END ###

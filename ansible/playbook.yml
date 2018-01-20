@@ -1,0 +1,7 @@
+# Support [CentOS6,Amazon Linux]
+- hosts: all
+  max_fail_percentage: 0
+  become: true
+  roles:
+    - role: common
+      tags: common

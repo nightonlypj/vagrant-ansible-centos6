@@ -1,0 +1,31 @@
+[staging]
+staging.mydomain
+
+[all:vars]
+ansible_ssh_port=22
+#ansible_ssh_user=ansible
+hosts_env=staging
+hosts_allow_sshd=x.x.x.x
+### system ###
+localtime=Japan
+clock_zone=Asia/Tokyo
+i18n_lang=ja_JP.UTF-8
+keyboard_keytable=jp106
+keyboard_model=jp106
+keyboard_layout=jp
+### aliases ###
+aliases_notice=admin@mydomain
+aliases_warning=admin@mydomain
+aliases_critical=admin@mydomain
+### ntpd ###
+# Use CentOS default
+#ntpd_server1=0.centos.pool.ntp.org
+#ntpd_server2=1.centos.pool.ntp.org
+#ntpd_server3=2.centos.pool.ntp.org
+#ntpd_server4=3.centos.pool.ntp.org
+# Use Amazon Linux
+ntpd_server1=0.amazon.pool.ntp.org
+ntpd_server2=1.amazon.pool.ntp.org
+ntpd_server3=2.amazon.pool.ntp.org
+ntpd_server4=3.amazon.pool.ntp.org
+### END ###

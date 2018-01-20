@@ -3,5 +3,7 @@ Thumbs.db
 .DS_Store
 /nbproject/private/
 /.vagrant/
+/ansible/hosts/development
+/ansible/*.retry
 /log/
 /Vagrantfile

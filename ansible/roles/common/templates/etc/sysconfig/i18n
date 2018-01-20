@@ -1,0 +1,8 @@
+{% if ansible_distribution == 'Amazon' %}
+### START ###
+#LANG=en_US.UTF-8
+{% endif %}
+LANG="{{ i18n_lang }}"
+{% if ansible_distribution == 'Amazon' %}
+### END ###
+{% endif %}

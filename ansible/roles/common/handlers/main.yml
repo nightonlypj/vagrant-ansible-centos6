@@ -1,0 +1,6 @@
+- name: newaliases
+  shell: newaliases
+- name: service iptables restart
+  service: name=iptables state=restarted
+- name: service ip6tables restart
+  service: name=ip6tables state=restarted

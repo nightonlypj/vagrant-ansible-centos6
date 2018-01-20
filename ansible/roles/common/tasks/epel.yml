@@ -1,0 +1,5 @@
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y install epel-release
+  yum: name=epel-release state=present
+- name: cd /etc/yum.repos.d; cp -a epel.repo epel.repo,def; sed -i -e "s/enabled\s*=\s*1/enabled=0/g" epel.repo
+  replace: dest=/etc/yum.repos.d/epel.repo regexp="enabled\s*=\s*1" replace="enabled=0" backup=yes
