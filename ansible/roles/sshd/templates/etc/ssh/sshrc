@@ -1,0 +1,7 @@
+### START ###
+{% if hosts_env == 'development' %}
+echo "`date +"%Y/%m/%d %H:%M:%S"` $SSH_CLIENT $SSH_TTY $USER" >> /var/log/ssh_login.log
+{% else %}
+echo "`date +"%Y/%m/%d %H:%M:%S"` $SSH_CLIENT $SSH_TTY $USER" | tee -a /var/tmp/notice_ssh_login.txt >> /var/log/ssh_login.log
+{% endif %}
+### END ###

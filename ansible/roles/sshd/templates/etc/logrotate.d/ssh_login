@@ -1,0 +1,7 @@
+### START ###
+/var/log/ssh_login.log {
+	missingok
+	notifempty
+	create 0662 root wheel
+}
+### END ###

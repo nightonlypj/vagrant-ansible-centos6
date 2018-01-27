@@ -5,3 +5,12 @@
   roles:
     - role: common
       tags: common
+    # Use ntpd
+    - role: ntpd
+      tags: ntpd
+    # Use Postfix(localhost only)
+    - role: postfix
+      tags: postfix
+    # Use sshd
+    - role: sshd
+      tags: sshd

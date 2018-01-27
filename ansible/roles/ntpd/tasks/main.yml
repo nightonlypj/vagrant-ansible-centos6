@@ -1,0 +1,8 @@
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/ntpd/templates/etc/ntp.conf ./; chmod 644 ntp.conf; chown root:root ntp.conf
+  template: src="templates/etc/ntp.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service ntpd restart
+
+### start ###
+- name: service ntpd start; chkconfig ntpd on
+  service: name=ntpd state=started enabled=yes

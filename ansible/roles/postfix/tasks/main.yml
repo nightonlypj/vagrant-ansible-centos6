@@ -1,0 +1,21 @@
+### yum ###  *** Tips: [Amazon Linux] default MTA is Sendmail
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) service sendmail stop; chkconfig sendmail off
+  service: name=sendmail state=stopped enabled=no
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y install postfix
+  yum: name="postfix" state=present
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) alternatives --set mta /usr/sbin/sendmail.postfix
+  alternatives: name=mta path=/usr/sbin/sendmail.postfix link=/usr/sbin/sendmail
+
+### conf ###
+- name: cd /etc/postfix; cp /vagrant/ansible/roles/postfix/templates/etc/postfix/main.cf ./; chmod 644 main.cf; chown root:root main.cf
+  template: src="templates/etc/postfix/main.cf" dest="/etc/postfix/" mode=644 owner=root group=root backup=yes
+  notify: service postfix restart
+- name: postfix check
+  shell: postfix check
+
+### start ###
+- name: service postfix start; chkconfig postfix on
+  service: name=postfix state=started enabled=yes

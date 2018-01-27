@@ -1,0 +1,24 @@
+### conf ###
+- name: cd /etc/ssh; cp /vagrant/ansible/roles/sshd/templates/etc/ssh/sshd_config ./; chmod 600 sshd_config; chown root:root sshd_config
+  template: src="templates/etc/ssh/sshd_config" dest="/etc/ssh/" mode=600 owner=root group=root backup=yes
+  notify: service sshd restart
+- name: sshd -t
+  shell: sshd -t
+
+### log ###
+- when: hosts_env != 'development'
+  name: (!development) cd /var/tmp; touch notice_ssh_login.txt; chmod 662 notice_ssh_login.txt; chown root:wheel notice_ssh_login.txt
+  file: path="/var/tmp/notice_ssh_login.txt" state=touch mode=662 owner=root group=wheel
+- when: hosts_env != 'development'
+  name: (!development) cd /etc/cron.hourly; cp /vagrant/ansible/roles/sshd/templates/etc/cron.hourly/notice_ssh_login.cron ./; chmod 740 notice_ssh_login.cron; chown root:wheel notice_ssh_login.cron
+  template: src="templates/etc/cron.hourly/notice_ssh_login.cron" dest="/etc/cron.hourly/" mode=740 owner=root group=wheel backup=no
+- when: hosts_env != 'development'
+  name: (!development) cd /etc/logrotate.d; cp /vagrant/ansible/roles/sshd/templates/etc/logrotate.d/notice_ssh_login ./; chmod 644 notice_ssh_login; chown root:root notice_ssh_login
+  template: src="templates/etc/logrotate.d/notice_ssh_login" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+- name: cd /var/log; touch ssh_login.log; chmod 662 ssh_login.log; chown root:wheel ssh_login.log
+  file: path="/var/log/ssh_login.log" state=touch mode=662 owner=root group=wheel
+- name: cd /etc/ssh; cp /vagrant/ansible/roles/sshd/templates/etc/ssh/sshrc ./; chmod 644 sshrc; chown root:root sshrc
+  template: src="templates/etc/ssh/sshrc" dest="/etc/ssh/" mode=644 owner=root group=root backup=yes
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/sshd/templates/etc/logrotate.d/ssh_login ./; chmod 644 ssh_login; chown root:root ssh_login
+  template: src="templates/etc/logrotate.d/ssh_login" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
