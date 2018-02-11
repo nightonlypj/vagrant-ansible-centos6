@@ -1,0 +1,76 @@
+### yum ###
+- name: yum -y install httpd httpd-devel mod_ssl
+  yum: name={{ item }} state=present
+  with_items:
+    - httpd
+    - httpd-devel
+    - mod_ssl
+
+### Let's Encrypt ###
+- when: httpd_enable_letsencrypt == 1
+  name: (Let's Encrypt) cd /etc/letsencrypt/live/{{ httpd_front_servername }}; cp /vagrant/ansible/roles/httpd/templates/etc/letsencrypt/live/{{ httpd_front_servername }}/*.pem ./; chmod 644 *.pem; chown root:root *.pem
+  copy: src={{ item }} dest="/etc/letsencrypt/live/{{ httpd_front_servername }}/" mode=664 owner=root group=root force=no
+  with_fileglob:
+    - "templates/etc/letsencrypt/live/{{ httpd_front_servername }}/*.pem"
+  notify: service httpd restart
+- when: httpd_enable_letsencrypt == 2
+  name: (Let's Encrypt[force]) cd /etc/letsencrypt/live/{{ httpd_front_servername }}; cp /vagrant/ansible/roles/httpd/templates/etc/letsencrypt/live/{{ httpd_front_servername }}/*.pem ./; chmod 644 *.pem; chown root:root *.pem
+  copy: src={{ item }} dest="/etc/letsencrypt/live/{{ httpd_front_servername }}/" mode=664 owner=root group=root force=yes
+  with_fileglob:
+    - "templates/etc/letsencrypt/live/{{ httpd_front_servername }}/*.pem"
+  notify: service httpd restart
+
+- when: httpd_enable_letsencrypt == 1
+  name: (Let's Encrypt) cd /etc/cron.weekly; cp /vagrant/ansible/roles/httpd/templates/etc/cron.weekly/renew_letsencrypt.cron ./; chmod 740 renew_letsencrypt.cron; chown root:wheel renew_letsencrypt.cron
+  copy: src="templates/etc/cron.weekly/renew_letsencrypt.cron" dest="/etc/cron.weekly/" mode=740 owner=root group=wheel
+- when: httpd_enable_letsencrypt == 1
+  name: (Let's Encrypt) cd /etc/logrotate.d; cp /vagrant/ansible/roles/httpd/templates/etc/logrotate.d/renew_letsencrypt ./; chmod 644 renew_letsencrypt; chown root:root renew_letsencrypt
+  template: src="templates/etc/logrotate.d/renew_letsencrypt" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### conf ###
+- name: cd /etc/httpd/conf; cp /vagrant/ansible/roles/httpd/templates/etc/httpd/conf/{.ht*,*} ./; chmod 644 {.ht*,*}; chown root:root {.ht*,*}
+  template: src={{ item }} dest="/etc/httpd/conf/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/httpd/conf/.ht*"
+    - "templates/etc/httpd/conf/*"
+  notify: service httpd restart
+- name: cd /etc/httpd/conf.d; cp /vagrant/ansible/roles/httpd/templates/etc/httpd/conf.d/{.ht*,*} ./; chmod 644 {.ht*,*}; chown root:root {.ht*,*}
+  template: src={{ item }} dest="/etc/httpd/conf.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/httpd/conf.d/.ht*"
+    - "templates/etc/httpd/conf.d/*"
+  notify: service httpd restart
+
+### log ###
+- name: cd /var/log; mkdir -p httpd; chmod 750 httpd; chown root:wheel httpd
+  file: path="/var/log/httpd" state=directory mode=750 owner=root group=wheel
+
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/httpd/templates/etc/logrotate.d/httpd ./; chmod 644 httpd; chown root:root httpd
+  template: src="templates/etc/logrotate.d/httpd" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### html/cgi-bin ###
+- name: cd /var/www; chmod 771 {.,html,cgi-bin}; chown root:wheel {.,html,cgi-bin}
+  file: path={{ item }} state=directory mode=771 owner=root group=wheel
+  with_items:
+    - "/var/www"
+    - "/var/www/html"
+    - "/var/www/cgi-bin"
+
+- name: cd /var/www/html; cp /vagrant/ansible/roles/httpd/templates/var/www/html/{.ht*,*} ./; chmod 664 {.ht*,*}; chown root:wheel {.ht*,*}
+  copy: src={{ item }} dest="/var/www/html/" mode=664 owner=root group=wheel backup=no
+  with_fileglob:
+    - "templates/var/www/html/.ht*"
+    - "templates/var/www/html/*"
+
+- name: cd /var/www/cgi-bin; cp /vagrant/ansible/roles/httpd/templates/var/www/cgi-bin/{.ht*,*} ./; chmod 664 {.ht*,*}; chown root:wheel {.ht*,*}
+  copy: src={{ item }} dest="/var/www/cgi-bin/" mode=664 owner=root group=wheel backup=no
+  with_fileglob:
+    - "templates/var/www/cgi-bin/.ht*"
+    - "templates/var/www/cgi-bin/*"
+
+### check/start ###
+- name: apachectl configtest
+  shell: apachectl configtest
+
+- name: service httpd start; chkconfig httpd on
+  service: name=httpd state=started enabled=yes

@@ -1,0 +1,62 @@
+### START ###
+<VirtualHost *:80>
+{% if httpd_ssl_is_80port == 0 %}
+    ServerName {{ httpd_front_servername }}
+
+    # SSL redirect
+    RewriteEngine On
+{% if httpd_enable_letsencrypt != 0 %}
+    RewriteCond %{REQUEST_URI} !^/\.well-known/.*$ [NC]
+{% endif %}
+    RewriteRule ^(.*)?$ https://%{HTTP_HOST}$1 [R=301,L]
+
+    ErrorLog logs/front_error_log
+    CustomLog logs/front_access_log combined
+</VirtualHost>
+<VirtualHost _default_:443>
+{% endif %}
+    ServerName {{ httpd_front_servername }}
+    Header set Strict-Transport-Security "max-age=31536000"
+{% if httpd_ssl_is_80port != 0 %}
+
+    # SSL redirect
+    RewriteEngine On
+    RewriteCond %{HTTP:{{ httpd_ssl_check_header }}} !^{{ httpd_ssl_check_value }}$
+    RewriteRule ^(.*)?$ https://%{HTTP_HOST}$1 [R=301,L]
+{% endif %}
+
+    # Maintenance settings
+    DocumentRoot /var/www/html
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/503.html
+    RewriteRule ^ - [R=503]
+    ErrorDocument 503 /503.html
+
+    # Access control
+    <Location />
+{% if httpd_enable_ip_limit != 0 %}
+        Order deny,allow
+        Deny from all
+        Include conf.d/allow-ip.inc
+{% else %}
+        Order allow,deny
+        Allow from all
+{% endif %}
+    </Location>
+
+{% if httpd_ssl_is_80port == 0 %}
+    SSLEngine on
+{% if httpd_front_crt_file != '' %}
+    SSLCertificateFile {{ httpd_front_crt_file }}
+{% endif %}
+{% if httpd_front_key_file != '' %}
+    SSLCertificateKeyFile {{ httpd_front_key_file }}
+{% endif %}
+{% if httpd_front_chain_file != '' %}
+    SSLCertificateChainFile {{ httpd_front_chain_file }}
+{% endif %}
+{% endif %}
+    ErrorLog logs/front_ssl_error_log
+    CustomLog logs/front_ssl_access_log combined
+</VirtualHost>
+### END ###

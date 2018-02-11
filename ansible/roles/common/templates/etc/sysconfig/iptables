@@ -43,6 +43,11 @@
 -A INPUT -p udp -m udp --dport 33434:33499 -j ACCEPT
 # TCP{{ ansible_ssh_port }}番ポート(SSH)へのアクセスを許可
 -A INPUT -p tcp -m tcp --dport {{ ansible_ssh_port }} -j ACCEPT
+{% if iptables_enable_http != 0 %}
+# TCP80/443番ポート(HTTP/HTTPS)へのアクセスを許可
+-A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+{% endif %}
 
 # 上記のルールにマッチしなかったアクセスはログを記録して破棄
 -A INPUT -m limit --limit 1/sec -j LOG --log-prefix "[IPTABLES INPUT] : "

@@ -1,5 +1,15 @@
-[staging]
-staging.mydomain
+[staging-web1]
+staging-web1.mydomain
+
+[staging-web2]
+staging-web2.mydomain
+
+[web-servers:children]
+staging-web1
+staging-web2
+
+[staging:children]
+web-servers
 
 [all:vars]
 ansible_ssh_port=22
@@ -29,3 +39,32 @@ ntpd_server2=1.amazon.pool.ntp.org
 ntpd_server3=2.amazon.pool.ntp.org
 ntpd_server4=3.amazon.pool.ntp.org
 ### END ###
+
+[web-servers:vars]
+hosts_allow_httpd=ALL
+iptables_enable_http=1
+### Apache ###
+httpd_enable_ip_limit=0
+httpd_front_servername=staging.mydomain
+### Load Balancer ###
+# No use
+#httpd_ssl_is_80port=0
+#httpd_ssl_check_header=
+#httpd_ssl_check_value=
+#httpd_log_host_header=
+# Use ELB
+httpd_ssl_is_80port=1
+httpd_ssl_check_header=X-Forwarded-Port
+httpd_ssl_check_value=443
+httpd_log_host_header=X-Forwarded-For
+### SSL Certificate ###
+# Use default
+httpd_enable_letsencrypt=0
+httpd_front_crt_file=/etc/pki/tls/certs/localhost.crt
+httpd_front_key_file=/etc/pki/tls/private/localhost.key
+httpd_front_chain_file=
+# Use Let's Encrypt(1=Not overwrite, 2=Force overwrite)
+#httpd_enable_letsencrypt=1
+#httpd_front_crt_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/cert.pem
+#httpd_front_key_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/privkey.pem
+#httpd_front_chain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/chain.pem

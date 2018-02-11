@@ -10,4 +10,7 @@
 #
 ### START ###
 sshd: {{ hosts_allow_sshd }}
+{% if hosts_allow_httpd != '' %}
+httpd: {{ hosts_allow_httpd }}
+{% endif %}
 ### END ###

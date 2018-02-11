@@ -1,0 +1,41 @@
+### yum ###
+- name: yum -y --enablerepo=epel install php php-devel php-gd php-gmp php-intl php-mbstring php-mcrypt php-pdo php-pear php-xml php-pecl-imagick php-mysql php-pgsql php-pecl-redis
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - php
+    - php-devel
+    - php-gd
+    - php-gmp
+    - php-intl
+    - php-mbstring
+    - php-mcrypt
+    - php-pdo
+    - php-pear
+    - php-xml
+    # Use ImageMagick
+    - php-pecl-imagick
+    # Use MySQL
+    - php-mysql
+    # Use PostgreSQL
+    - php-pgsql
+    # Use Redis
+    - php-pecl-redis
+  notify: service httpd restart
+
+### html ###  *** Tips: What you set with Apache will return when installing PHP
+- name: cd /var/www; chmod 771 html; chown root:wheel html
+  file: path="/var/www/html" state=directory mode=771 owner=root group=wheel
+
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/php-httpd/templates/etc/php.ini ./; chmod 644 php.ini; chown root:root php.ini
+  template: src="templates/etc/php.ini" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service httpd restart
+- name: cd /etc/php.d; cp /vagrant/ansible/roles/php-httpd/templates/etc/php.d/* ./; chmod 644 *; chown root:root *
+  template: src={{ item }} dest="/etc/php.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/php.d/*"
+  notify: service httpd restart
+
+### check ###
+- name: apachectl configtest
+  shell: apachectl configtest

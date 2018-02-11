@@ -1,0 +1,6 @@
+### START ###
+/var/log/renew_letsencrypt.log {
+	missingok
+	notifempty
+}
+### END ###

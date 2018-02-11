@@ -1,0 +1,19 @@
+/var/log/httpd/*log {
+### START ###
+    daily
+{% if hosts_env == 'development' or hosts_env == 'test' %}
+    rotate 7
+{% else %}
+    rotate 90
+{% endif %}
+### END ###
+    missingok
+    notifempty
+    sharedscripts
+### START ###
+#    delaycompress
+### END ###
+    postrotate
+        /sbin/service httpd reload > /dev/null 2>/dev/null || true
+    endscript
+}
