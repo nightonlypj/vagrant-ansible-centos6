@@ -29,15 +29,9 @@ aliases_warning=admin@mydomain
 aliases_critical=admin@mydomain
 ### ntpd ###
 # Use CentOS default
-#ntpd_server1=0.centos.pool.ntp.org
-#ntpd_server2=1.centos.pool.ntp.org
-#ntpd_server3=2.centos.pool.ntp.org
-#ntpd_server4=3.centos.pool.ntp.org
+#ntpd_servers='["0.centos.pool.ntp.org", "1.centos.pool.ntp.org", "2.centos.pool.ntp.org", "3.centos.pool.ntp.org"]'
 # Use Amazon Linux
-ntpd_server1=0.amazon.pool.ntp.org
-ntpd_server2=1.amazon.pool.ntp.org
-ntpd_server3=2.amazon.pool.ntp.org
-ntpd_server4=3.amazon.pool.ntp.org
+ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.ntp.org", "3.amazon.pool.ntp.org"]'
 ### END ###
 
 [web-servers:vars]

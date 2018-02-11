@@ -3,8 +3,8 @@
 BATCH_NAME='notice_ssh_login'
 LOG_FILE="/var/log/$BATCH_NAME.log"
 TARGET_PATH='/var/tmp/notice_ssh_login.txt'
-ATTR_CODE=662
-GROUP_NAME='wheel'
+ATTR_CODE=622
+GROUP_NAME='root'
 
 echo_log () {
 	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
@@ -12,7 +12,7 @@ echo_log () {
 }
 
 send_error_mail () {
-	echo -e "$error_msg" | mail -s "[WARNING][`hostname`]$BATCH_NAME report" -r crond warning
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
 	echo_log 'INFO' 'Send error mail'
 }
 
@@ -55,7 +55,7 @@ send_report_mail () {
 		return
 	fi
 
-	cat $old | mail -s "[`hostname`]$BATCH_NAME report" -r crond root
+	cat $old | mail -s "$BATCH_NAME report for `hostname`" -r crond root
 	echo_log 'INFO' 'Send mail'
 }
 

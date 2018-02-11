@@ -7,8 +7,8 @@
 
 ### log ###
 - when: hosts_env != 'development'
-  name: (!development) cd /var/tmp; touch notice_ssh_login.txt; chmod 662 notice_ssh_login.txt; chown root:wheel notice_ssh_login.txt
-  file: path="/var/tmp/notice_ssh_login.txt" state=touch mode=662 owner=root group=wheel
+  name: (!development) cd /var/tmp; touch notice_ssh_login.txt; chmod 622 notice_ssh_login.txt; chown root:root notice_ssh_login.txt
+  file: path="/var/tmp/notice_ssh_login.txt" state=touch mode=622 owner=root group=root
 - when: hosts_env != 'development'
   name: (!development) cd /etc/cron.hourly; cp /vagrant/ansible/roles/sshd/templates/etc/cron.hourly/notice_ssh_login.cron ./; chmod 740 notice_ssh_login.cron; chown root:wheel notice_ssh_login.cron
   template: src="templates/etc/cron.hourly/notice_ssh_login.cron" dest="/etc/cron.hourly/" mode=740 owner=root group=wheel backup=no

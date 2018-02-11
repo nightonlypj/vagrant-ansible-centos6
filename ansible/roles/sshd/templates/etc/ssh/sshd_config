@@ -1,7 +1,7 @@
 {% if ansible_distribution == 'CentOS' %}
 #	$OpenBSD: sshd_config,v 1.80 2008/07/02 02:24:18 djm Exp $
 {% elif ansible_distribution == 'Amazon' %}
-#	$OpenBSD: sshd_config,v 1.93 2014/01/10 05:59:19 djm Exp $
+#	$OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
 {% endif %}
 
 # This is the sshd server system-wide configuration file.  See
@@ -40,17 +40,15 @@ Port {{ ansible_ssh_port }}
 # activation of protocol 1
 Protocol 2
 {% elif ansible_distribution == 'Amazon' %}
-# The default requires explicit activation of protocol 1
-#Protocol 2
 ### START ###
 Protocol 2
 ### END ###
 {% endif %}
 
+{% if ansible_distribution == 'CentOS' %}
 # HostKey for protocol version 1
 #HostKey /etc/ssh/ssh_host_key
 # HostKeys for protocol version 2
-{% if ansible_distribution == 'CentOS' %}
 #HostKey /etc/ssh/ssh_host_rsa_key
 {% elif ansible_distribution == 'Amazon' %}
 HostKey /etc/ssh/ssh_host_rsa_key
@@ -61,17 +59,19 @@ HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 {% endif %}
 
+{% if ansible_distribution == 'CentOS' %}
 # Lifetime and size of ephemeral version 1 server key
 #KeyRegenerationInterval 1h
 #ServerKeyBits 1024
-
-{% if ansible_distribution == 'Amazon' %}
+{% elif ansible_distribution == 'Amazon' %}
 # Ciphers and keying
 #RekeyLimit default none
-
 {% endif %}
+
 # Logging
+{% if ansible_distribution == 'CentOS' %}
 # obsoletes QuietMode and FascistLogging
+{% endif %}
 #SyslogFacility AUTH
 SyslogFacility AUTHPRIV
 #LogLevel INFO
@@ -98,7 +98,9 @@ MaxAuthTries 3
 ### END ###
 #MaxSessions 10
 
+{% if ansible_distribution == 'CentOS' %}
 #RSAAuthentication yes
+{% endif %}
 #PubkeyAuthentication yes
 {% if ansible_distribution == 'CentOS' %}
 #AuthorizedKeysFile	.ssh/authorized_keys
@@ -119,23 +121,30 @@ AuthorizedKeysFile .ssh/authorized_keys
 {% endif %}
 
 # For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+{% if ansible_distribution == 'CentOS' %}
 #RhostsRSAAuthentication no
 # similar for protocol version 2
+{% endif %}
 #HostbasedAuthentication no
 # Change to yes if you don't trust ~/.ssh/known_hosts for
+{% if ansible_distribution == 'CentOS' %}
 # RhostsRSAAuthentication and HostbasedAuthentication
+{% elif ansible_distribution == 'Amazon' %}
+# HostbasedAuthentication
+{% endif %}
 #IgnoreUserKnownHosts no
 # Don't read the user's ~/.rhosts and ~/.shosts files
 #IgnoreRhosts yes
 
+{% if ansible_distribution == 'CentOS' %}
 # To disable tunneled clear text passwords, change to no here!
 #PasswordAuthentication yes
 #PermitEmptyPasswords no
-{% if ansible_distribution == 'CentOS' %}
 PasswordAuthentication yes
 {% elif ansible_distribution == 'Amazon' %}
 # EC2 uses keys for remote access
 PasswordAuthentication no
+#PermitEmptyPasswords no
 {% endif %}
 
 # Change to no to disable s/key passwords
@@ -178,7 +187,6 @@ GSSAPICleanupCredentials yes
 {% elif ansible_distribution == 'Amazon' %}
 # WARNING: 'UsePAM no' is not supported in Amazon Linux AMI and may cause several
 # problems.
-# Leaving enabled as described so that account and session checks are run
 {% endif %}
 UsePAM yes
 
@@ -206,7 +214,6 @@ X11Forwarding yes
 {% if ansible_distribution == 'CentOS' %}
 #PrintLastLog yes
 {% elif ansible_distribution == 'Amazon' %}
-# Explicitly enable
 PrintLastLog yes
 {% endif %}
 #TCPKeepAlive yes
@@ -214,14 +221,18 @@ PrintLastLog yes
 {% if ansible_distribution == 'CentOS' %}
 #UsePrivilegeSeparation yes
 {% elif ansible_distribution == 'Amazon' %}
-UsePrivilegeSeparation sandbox		# Default for new installations.
+UsePrivilegeSeparation sandbox
 {% endif %}
 #PermitUserEnvironment no
 #Compression delayed
 #ClientAliveInterval 0
 #ClientAliveCountMax 3
 #ShowPatchLevel no
+{% if ansible_distribution == 'CentOS' %}
 #UseDNS yes
+{% elif ansible_distribution == 'Amazon' %}
+#UseDNS no
+{% endif %}
 ### START ###
 UseDNS no
 ### END ###
