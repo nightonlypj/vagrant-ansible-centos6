@@ -13,4 +13,7 @@ sshd: {{ hosts_allow_sshd }}
 {% if hosts_allow_httpd != '' %}
 httpd: {{ hosts_allow_httpd }}
 {% endif %}
+{% if hosts_allow_mysqld != '' %}
+mysqld: {{ hosts_allow_mysqld }}
+{% endif %}
 ### END ###

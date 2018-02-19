@@ -29,6 +29,7 @@ ansible
         ntpd            ：ntpdの設定
         postfix         ：Postfix(localhost only)の設定
         sshd            ；sshdの設定
+        mysql           ：MySQLの設定
         httpd           ：Apacheの設定　※Load Balancer対応/Let's Encrypt自動更新対応
         php-httpd       ：PHP for Apacheの設定
     ansible.cfg     ：Ansibleの設定ファイル
@@ -81,6 +82,10 @@ $ vi development
 
 ※その他、設定は必要に応じて変更してください。  
 ※test/staging/productionも必要に応じて設定してください。追加も可能です。
+
+DNSで設定したホスト名を指定  
+> httpd_front_servername=`test.mydomain`  
+※Let's Encryptを使用する場合は、`ansible/roles/httpd/templates/etc/letsencrypt/live/test.mydomain`をホスト名にコピーまたはリネームしてください。
 
 ## development使用方法(例)
 
@@ -191,5 +196,12 @@ $ exit
 # certbot-auto certonly --webroot -w /var/www/html -d test.mydomain --email admin@mydomain --agree-tos --debug
 Is this ok [y/d/N]: y
 (Y)es/(N)o: y
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+# apachectl configtest
+Syntax OK
+# apachectl graceful
 ```
 ※更新(certbot-auto renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
+
+※メール「Please Confirm Your EFF Subscription」が届きます -> URLをクリック

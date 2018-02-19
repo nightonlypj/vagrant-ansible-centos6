@@ -1,6 +1,9 @@
 [development]
 localhost ansible_connection=local
 
+[db-servers:children]
+development
+
 [web-servers:children]
 development
 
@@ -8,7 +11,11 @@ development
 ansible_ssh_port=22
 #ansible_ssh_user=ansible
 hosts_env=development
-hosts_allow_sshd=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0
+hosts_allow_sshd=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
+hosts_allow_httpd=ALL
+iptables_enable_http=1
+hosts_allow_mysqld=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
+iptables_enable_mysqld=1
 ### system ###
 localtime=Japan
 clock_zone=Asia/Tokyo
@@ -25,12 +32,19 @@ aliases_critical=admin@mydomain
 ntpd_servers='["0.centos.pool.ntp.org", "1.centos.pool.ntp.org", "2.centos.pool.ntp.org", "3.centos.pool.ntp.org"]'
 ### END ###
 
+[db-servers:vars]
+### MySQL ###
+mysql_root_password=xyz789
+mysql_dbname=mytest
+mysql_username=myuser
+mysql_password=abc123
+### END ###
+
 [web-servers:vars]
-hosts_allow_httpd=ALL
-iptables_enable_http=1
 ### Apache ###
-httpd_enable_ip_limit=0
 httpd_front_servername=dev-centos6.local
+# No use IP limit
+httpd_enable_ip_limit=0
 ### Load Balancer ###
 # No use
 httpd_ssl_is_80port=0
@@ -43,3 +57,4 @@ httpd_enable_letsencrypt=0
 httpd_front_crt_file=/etc/pki/tls/certs/localhost.crt
 httpd_front_key_file=/etc/pki/tls/private/localhost.key
 httpd_front_chain_file=
+### END ###

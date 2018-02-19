@@ -45,6 +45,10 @@
 -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 {% endif %}
+{% if iptables_enable_mysqld != 0 %}
+# TCP3306番ポート(MySQL)へのアクセスを許可
+-A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+{% endif %}
 
 # 上記のルールにマッチしなかったアクセスはログを記録して破棄
 -A INPUT -m limit --limit 1/sec -j LOG --log-prefix "[IPTABLES INPUT] : "

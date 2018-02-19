@@ -1,0 +1,57 @@
+# This logname can be set in /etc/my.cnf
+# by setting the variable "err-log"
+# in the [safe_mysqld] section as follows:
+#
+# [safe_mysqld]
+# err-log=/var/log/mysqld.log
+#
+# If the root user has a password you have to create a
+# /root/.my.cnf configuration file with the following
+# content:
+#
+# [mysqladmin]
+# password = <secret>
+# user= root
+#
+# where "<secret>" is the password.
+#
+# ATTENTION: This /root/.my.cnf should be readable ONLY
+# for root !
+
+# Then, un-comment the following lines to enable rotation of mysql's log file:
+
+#/var/log/mysqld.log {
+#        create 640 mysql mysql
+#        notifempty
+#       daily
+#        rotate 3
+#        missingok
+#        compress
+#    postrotate
+#       # just if mysqld is really running
+#       if test -x /usr/bin/mysqladmin && \
+#          /usr/bin/mysqladmin ping &>/dev/null
+#       then
+#          /usr/bin/mysqladmin flush-logs
+#       fi
+#    endscript
+#}
+### START ###
+/var/log/mysql/*.log {
+        create 644 mysql mysql
+        notifempty
+{% if hosts_env == 'development' %}
+        daily
+        rotate 7
+{% endif %}
+        missingok
+    postrotate
+	# just if mysqld is really running
+	if test -x /usr/bin/mysqladmin && \
+	   /usr/bin/mysqladmin ping &>/dev/null
+	then
+	   /usr/bin/mysqladmin --defaults-extra-file=/root/.my.cnf flush-logs
+	fi
+    endscript
+}
+### END ###

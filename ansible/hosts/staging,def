@@ -8,8 +8,15 @@ staging-web2.mydomain
 staging-web1
 staging-web2
 
+[staging-db]
+staging-db.mydomain
+
+[db-servers:children]
+staging-db
+
 [staging:children]
 web-servers
+db-servers
 
 [all:vars]
 ansible_ssh_port=22
@@ -34,12 +41,29 @@ aliases_critical=admin@mydomain
 ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.ntp.org", "3.amazon.pool.ntp.org"]'
 ### END ###
 
+[db-servers:vars]
+hosts_allow_httpd=
+iptables_enable_http=0
+hosts_allow_mysqld=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
+iptables_enable_mysqld=1
+### MySQL ###
+mysql_root_password=xyz789
+mysql_dbname=mytest
+mysql_username=myuser
+mysql_password=abc123
+### END ###
+
 [web-servers:vars]
 hosts_allow_httpd=ALL
 iptables_enable_http=1
+hosts_allow_mysqld=
+iptables_enable_mysqld=0
 ### Apache ###
-httpd_enable_ip_limit=0
 httpd_front_servername=staging.mydomain
+# No use IP limit
+httpd_enable_ip_limit=0
+# Use IP limit
+#httpd_enable_ip_limit=1
 ### Load Balancer ###
 # No use
 #httpd_ssl_is_80port=0
@@ -62,3 +86,4 @@ httpd_front_chain_file=
 #httpd_front_crt_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/cert.pem
 #httpd_front_key_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/privkey.pem
 #httpd_front_chain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/chain.pem
+### END ###

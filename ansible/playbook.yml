@@ -15,6 +15,14 @@
     - role: sshd
       tags: sshd
 
+- hosts: db-servers
+  max_fail_percentage: 0
+  become: true
+  roles:
+    # Use MySQL
+    - role: mysql
+      tags: mysql
+
 - hosts: web-servers
   max_fail_percentage: 0
   become: true

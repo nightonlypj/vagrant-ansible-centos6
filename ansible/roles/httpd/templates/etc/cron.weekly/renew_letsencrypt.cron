@@ -9,7 +9,7 @@ echo_log () {
 }
 
 send_error_mail () {
-	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report in `hostname`" -r crond warning
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
 	echo_log 'INFO' 'Send error mail'
 }
 
