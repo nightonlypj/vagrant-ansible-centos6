@@ -2,7 +2,7 @@
 
 BATCH_NAME='notice_ssh_login'
 LOG_FILE="/var/log/$BATCH_NAME.log"
-TARGET_PATH='/var/tmp/notice_ssh_login.txt'
+TARGET_PATH='/var/spool/.notice_ssh_login'
 ATTR_CODE=622
 GROUP_NAME='root'
 
