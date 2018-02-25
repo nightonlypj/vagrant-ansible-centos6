@@ -51,7 +51,12 @@ dump_and_gzip_files() {
 
 	for database in $databases; do
 		file="$TARGET_PATH/${database}_`date "+%Y%m%d"`$EXT_NAME"
-		ionice -c 2 -n 7 nice -n 19 /usr/bin/mysqldump --defaults-extra-file=/root/.my.cnf -q --single-transaction $database > $file 2>> $LOG_FILE
+		# Tips: -- Warning: Skipping the data of table mysql.event. Specify the --events option explicitly.
+		if [ "$database" = 'mysql' ]; then
+			ionice -c 2 -n 7 nice -n 19 /usr/bin/mysqldump --defaults-extra-file=/root/.my.cnf -q --single-transaction --events $database > $file 2>> $LOG_FILE
+		else
+			ionice -c 2 -n 7 nice -n 19 /usr/bin/mysqldump --defaults-extra-file=/root/.my.cnf -q --single-transaction $database > $file 2>> $LOG_FILE
+		fi
 		if [ $? -ne 0 ]; then
 			echo_log 'ERROR' "Dump $file"
 			continue
