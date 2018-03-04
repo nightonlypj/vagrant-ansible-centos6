@@ -46,6 +46,8 @@ hosts_allow_httpd=
 iptables_enable_http=0
 hosts_allow_mysqld=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
 iptables_enable_mysqld=1
+hosts_allow_postgresql=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
+iptables_enable_postgresql=1
 ### MySQL ###
 mysql_root_password=xyz789
 mysql_dbname=mytest
@@ -62,6 +64,8 @@ hosts_allow_httpd=ALL
 iptables_enable_http=1
 hosts_allow_mysqld=
 iptables_enable_mysqld=0
+hosts_allow_postgresql=
+iptables_enable_postgresql=0
 ### Apache ###
 httpd_front_servername=mydomain
 # No use IP limit

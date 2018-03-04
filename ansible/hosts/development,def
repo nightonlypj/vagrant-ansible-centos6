@@ -16,6 +16,8 @@ hosts_allow_httpd=ALL
 iptables_enable_http=1
 hosts_allow_mysqld=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
 iptables_enable_mysqld=1
+hosts_allow_postgresql=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
+iptables_enable_postgresql=1
 ### system ###
 localtime=Japan
 clock_zone=Asia/Tokyo
