@@ -30,6 +30,7 @@ ansible
         postfix         ：Postfix(localhost only)の設定
         sshd            ；sshdの設定
         mysql           ：MySQLの設定
+        postgresql      ：PostgreSQLの設定
         httpd           ：Apacheの設定　※Load Balancer対応/Let's Encrypt自動更新対応
         php-httpd       ：PHP for Apacheの設定
     ansible.cfg     ：Ansibleの設定ファイル
@@ -118,7 +119,7 @@ $ su -
 ```
 # useradd -g wheel -u 400 ansible
 # passwd ansible
-: ********(ansibleのPW)
+: ********(ansibleのPW) ※ここで決めて、以降はそれを使用
 : ********(ansibleのPW)
 ```
 ```

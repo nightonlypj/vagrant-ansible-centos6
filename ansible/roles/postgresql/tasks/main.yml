@@ -1,0 +1,82 @@
+### yum ###
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y install postgresql postgresql-server postgresql-devel postgresql-contrib python-psycopg2
+  yum: name={{ item }} state=present
+  with_items:
+    - postgresql
+    - postgresql-server
+    - postgresql-devel
+    - postgresql-contrib
+    - python-psycopg2
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y install postgresql postgresql-server postgresql-devel postgresql-contrib python27-psycopg2
+  yum: name={{ item }} state=present
+  with_items:
+    - postgresql
+    - postgresql-server
+    - postgresql-devel
+    - postgresql-contrib
+    - python27-psycopg2
+
+### init ###
+- name: test ! -e /var/lib/pgsql/data/postgresql.conf
+  stat: path=/var/lib/pgsql/data/postgresql.conf
+  register: f
+- when: not f.stat.exists
+  name: /etc/rc.d/init.d/postgresql initdb
+  shell: /etc/rc.d/init.d/postgresql initdb
+
+### conf ###
+- name: cd /var/lib/pgsql/data; cp /vagrant/ansible/roles/postgresql/templates/var/lib/pgsql/data/*.conf ./; chmod 600 *.conf; chown postgres:postgres *.conf
+  template: src={{ item }} dest="/var/lib/pgsql/data/" mode=600 owner=postgres group=postgres backup=yes
+  with_fileglob:
+    - "templates/var/lib/pgsql/data/*.conf"
+  notify: service postgresql restart
+# Ver8.4のpsqlコマンドで、ホスト名指定が必要になる為
+#- name: mkdir -p /var/run/postgresql; chmod 750 /var/run/postgresql; chown postgres:postgres /var/run/postgresql
+#  file: path="/var/run/postgresql" state=directory mode=750 owner=postgres group=postgres
+
+### log ###
+- name: cd /var/log; mkdir -p pgsql; chmod 750 pgsql; chown postgres:wheel pgsql
+  file: path="/var/log/pgsql" state=directory mode=750 owner=postgres group=wheel
+- name: ln -sfn /var/log/pgsql /var/lib/pgsql/data/pg_log
+  file: src="/var/log/pgsql" dest="/var/lib/pgsql/data/pg_log" state=link force=yes
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/postgresql/templates/etc/cron.daily/logcompress_postgresql.cron ./; chmod 740 logcompress_postgresql.cron; chown root:wheel logcompress_postgresql.cron
+  template: src="templates/etc/cron.daily/logcompress_postgresql.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/postgresql/templates/etc/logrotate.d/logcompress_postgresql ./; chmod 644 logcompress_postgresql; chown root:root logcompress_postgresql
+  template: src="templates/etc/logrotate.d/logcompress_postgresql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### backup ###
+- name: mkdir -p /var/backup/pg_dump; chmod 750 /var/backup/{.,pg_dump}; chown root:wheel /var/backup/{.,pg_dump}
+  file: path={{ item }} state=directory mode=750 owner=root group=wheel
+  with_items:
+    - "/var/backup"
+    - "/var/backup/pg_dump"
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/postgresql/templates/etc/cron.daily/backup_postgresql.cron ./; chmod 740 backup_postgresql.cron; chown root:wheel backup_postgresql.cron
+  template: src="templates/etc/cron.daily/backup_postgresql.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/postgresql/templates/etc/logrotate.d/backup_postgresql ./; chmod 644 backup_postgresql; chown root:root backup_postgresql
+  template: src="templates/etc/logrotate.d/backup_postgresql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### start ###
+- name: service postgresql start; chkconfig postgresql on
+  service: name=postgresql state=started enabled=yes
+
+### create database/user ###
+- name: sudo -u postgres createdb -E UTF-8 -l ja_JP.UTF-8 -O {{ postgresql_dbname }} -T template0 {{ postgresql_dbname }}
+  postgresql_db:
+    name: "{{ postgresql_dbname }}"
+    encoding: 'UTF-8'
+    lc_collate: 'ja_JP.UTF-8'
+    lc_ctype: 'ja_JP.UTF-8'
+    template: 'template0'
+    login_user: postgres
+  become_user: postgres
+
+- name: sudo -u postgres createuser -P {{ postgresql_username }}; {{ postgresql_password }}
+  postgresql_user:
+    db: "{{ postgresql_dbname }}"
+    name: "{{ postgresql_username }}"
+    password: "{{ postgresql_password }}"
+    priv: ALL
+    login_user: postgres
+  become_user: postgres

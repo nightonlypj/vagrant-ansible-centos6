@@ -40,6 +40,10 @@ mysql_root_password=xyz789
 mysql_dbname=mytest
 mysql_username=myuser
 mysql_password=abc123
+### PostgreSQL ###
+postgresql_dbname=pgtest
+postgresql_username=pguser
+postgresql_password=changepasswd
 ### END ###
 
 [web-servers:vars]

@@ -1,0 +1,6 @@
+### START ###
+/var/log/backup_postgresql.log {
+	missingok
+	notifempty
+}
+### END ###
