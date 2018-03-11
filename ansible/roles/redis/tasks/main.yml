@@ -1,0 +1,19 @@
+### yum ###
+- import_tasks: roles/common/tasks/epel.yml
+- name: yum -y --enablerepo=epel install redis
+  yum: name=redis state=present enablerepo=epel
+
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/redis/templates/etc/redis.conf ./; chmod 640 redis.conf; chown redis:root redis.conf
+  template: src="templates/etc/redis.conf" dest="/etc/" mode=640 owner=redis group=root backup=yes
+  notify: service redis restart
+- name: cd /var/run; mkdir -p redis; chmod 755 redis; chown redis:redis redis
+  file: path="/var/run/redis" state=directory mode=755 owner=redis group=redis
+
+### log ###
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/redis/templates/etc/logrotate.d/redis ./; chmod 644 redis; chown root:root redis
+  template: src="templates/etc/logrotate.d/redis" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### start ###
+- name: service redis start; chkconfig redis on
+  service: name=redis state=started enabled=yes

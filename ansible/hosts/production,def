@@ -43,11 +43,16 @@ ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.
 
 [db-servers:vars]
 hosts_allow_httpd=
-iptables_enable_http=0
 hosts_allow_mysqld=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
-iptables_enable_mysqld=1
 hosts_allow_postgresql=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fe80::]/10
-iptables_enable_postgresql=1
+iptables_enable_http_public=0
+ip6tables_enable_http_public=0
+iptables_mysqld_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+ip6tables_mysqld_internal_addresses='["fe80::/10"]'
+iptables_postgresql_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+ip6tables_postgresql_internal_addresses='["fe80::/10"]'
+iptables_redis_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+ip6tables_redis_internal_addresses='["fe80::/10"]'
 ### MySQL ###
 mysql_root_password=xyz789
 mysql_dbname=mytest
@@ -61,11 +66,16 @@ postgresql_password=changepasswd
 
 [web-servers:vars]
 hosts_allow_httpd=ALL
-iptables_enable_http=1
 hosts_allow_mysqld=
-iptables_enable_mysqld=0
 hosts_allow_postgresql=
-iptables_enable_postgresql=0
+iptables_enable_http_public=1
+ip6tables_enable_http_public=1
+iptables_mysqld_internal_addresses=
+ip6tables_mysqld_internal_addresses=
+iptables_postgresql_internal_addresses=
+ip6tables_postgresql_internal_addresses=
+iptables_redis_internal_addresses=
+ip6tables_redis_internal_addresses=
 ### Apache ###
 httpd_front_servername=mydomain
 # No use IP limit

@@ -25,6 +25,9 @@
     # Use PostgreSQL
     - role: postgresql
       tags: postgresql
+    # Use Redis
+    - role: redis
+      tags: redis
 
 - hosts: web-servers
   max_fail_percentage: 0

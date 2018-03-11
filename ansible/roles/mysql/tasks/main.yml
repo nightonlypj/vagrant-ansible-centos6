@@ -92,6 +92,14 @@
     login_user: root
     login_password: "{{ mysql_root_password }}" 
 
+### drop test ###
+- name: mysql> DROP DATABASE test;
+  mysql_db:
+    name: 'test'
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+
 ### create database/user ###
 - name: mysql> CREATE DATABASE {{ mysql_dbname }} CHARACTER SET utf8;
   mysql_db:
@@ -100,19 +108,11 @@
     login_user: root
     login_password: "{{ mysql_root_password }}" 
 
-- name: mysql> CREATE USER '{{ mysql_username }}'@'[LocalIP]' IDENTIFIED BY '{{ mysql_password }}'; GRANT ALL PRIVILEGES ON {{ mysql_dbname }}.* TO '{{ mysql_username }}'@'[LocalIP]';
+- name: mysql> CREATE USER '{{ mysql_username }}'@'%' IDENTIFIED BY '{{ mysql_password }}'; GRANT ALL PRIVILEGES ON {{ mysql_dbname }}.* TO '{{ mysql_username }}'@'%';
   mysql_user:
     name: "{{ mysql_username }}"
-    host: "{{ item }}"
+    host: "%"
     password: "{{ mysql_password }}"
     priv: "{{ mysql_dbname }}.*:ALL"
     login_user: root
     login_password: "{{ mysql_root_password }}" 
-  with_items:
-    - localhost
-    - 127.0.0.1
-    - 10.0.0.0/255.0.0.0
-    - 172.16.0.0/255.240.0.0
-    - 192.168.0.0/255.255.0.0
-    - ::1
-    - fe80::/10

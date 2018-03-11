@@ -40,18 +40,37 @@
 -A INPUT -p udp -m udp --dport 33434:33499 -j ACCEPT
 # TCP{{ ansible_ssh_port }}番ポート(SSH)へのアクセスを許可
 -A INPUT -p tcp -m tcp --dport {{ ansible_ssh_port }} -j ACCEPT
-{% if iptables_enable_http != 0 %}
+{% if ip6tables_enable_http_public != 0 %}
 # TCP80/443番ポート(HTTP/HTTPS)へのアクセスを許可
 -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 {% endif %}
-{% if iptables_enable_mysqld != 0 %}
+{% if ip6tables_mysqld_internal_addresses != '' %}
 # TCP3306番ポート(MySQL)へのアクセスを許可
--A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+{% set addresses = ip6tables_mysqld_internal_addresses | from_json %}
+{% for address in addresses %}
+{% if address != '' %}
+-A INPUT -s {{ address }} -p tcp -m tcp --dport 3306 -j ACCEPT
 {% endif %}
-{% if iptables_enable_postgresql != 0 %}
+{% endfor %}
+{% endif %}
+{% if ip6tables_postgresql_internal_addresses != '' %}
 # TCP5432番ポート(PostgreSQL)へのアクセスを許可
--A INPUT -p tcp -m tcp --dport 5432 -j ACCEPT
+{% set addresses = ip6tables_postgresql_internal_addresses | from_json %}
+{% for address in addresses %}
+{% if address != '' %}
+-A INPUT -s {{ address }} -p tcp -m tcp --dport 5432 -j ACCEPT
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if ip6tables_redis_internal_addresses != '' %}
+# TCP6379番ポート(Redis)へのアクセスを許可
+{% set addresses = ip6tables_redis_internal_addresses | from_json %}
+{% for address in addresses %}
+{% if address != '' %}
+-A INPUT -s {{ address }} -p tcp -m tcp --dport 6379 -j ACCEPT
+{% endif %}
+{% endfor %}
 {% endif %}
 
 # 上記のルールにマッチしなかったアクセスはログを記録して破棄
