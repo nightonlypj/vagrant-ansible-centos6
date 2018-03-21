@@ -1,7 +1,13 @@
 /var/log/redis/redis.log {
 ### START ###
 #    weekly
+    daily
 #    rotate 10
+{% if hosts_env == 'development' %}
+    rotate 7
+{% else %}
+    rotate 30
+{% endif %}
 #    copytruncate
 #    delaycompress
 #    compress

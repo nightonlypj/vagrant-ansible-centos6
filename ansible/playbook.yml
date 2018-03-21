@@ -28,6 +28,9 @@
     # Use Redis
     - role: redis
       tags: redis
+    # Use MongoDB
+    - role: mongodb
+      tags: mongodb
 
 - hosts: web-servers
   max_fail_percentage: 0

@@ -23,6 +23,8 @@ iptables_postgresql_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168
 ip6tables_postgresql_internal_addresses='["fe80::/10"]'
 iptables_redis_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
 ip6tables_redis_internal_addresses='["fe80::/10"]'
+iptables_mongodb_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+ip6tables_mongodb_internal_addresses='["fe80::/10"]'
 ### system ###
 localtime=Japan
 clock_zone=Asia/Tokyo

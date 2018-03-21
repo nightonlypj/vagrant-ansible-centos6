@@ -11,6 +11,8 @@
   file: path="/var/run/redis" state=directory mode=755 owner=redis group=redis
 
 ### log ###
+- name: cd /var/log; mkdir -p redis; chmod 750 redis; chown redis:wheel redis
+  file: path="/var/log/redis" state=directory mode=750 owner=redis group=wheel
 - name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/redis/templates/etc/logrotate.d/redis ./; chmod 644 redis; chown root:root redis
   template: src="templates/etc/logrotate.d/redis" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 

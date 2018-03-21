@@ -1,0 +1,27 @@
+### yum ###
+- import_tasks: roles/common/tasks/epel.yml
+- name: yum --enablerepo=epel install mongodb mongodb-server
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - mongodb
+    - mongodb-server
+
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/mongodb/templates/etc/mongodb.conf ./; chmod 644 mongodb.conf; chown root:root mongodb.conf
+  template: src="templates/etc/mongodb.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service mongod restart
+
+### log ###
+- name: cd /var/log; mkdir -p mongodb; chmod 750 mongodb; chown mongodb:wheel mongodb
+  file: path="/var/log/mongodb" state=directory mode=750 owner=mongodb group=wheel
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mongodb/templates/etc/logrotate.d/mongodb ./; chmod 644 mongodb; chown root:root mongodb
+  template: src="templates/etc/logrotate.d/mongodb" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/postgresql/templates/etc/cron.daily/logcompress_mongodb.cron ./; chmod 740 logcompress_mongodb.cron; chown root:wheel logcompress_mongodb.cron
+  template: src="templates/etc/cron.daily/logcompress_mongodb.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/postgresql/templates/etc/logrotate.d/logcompress_mongodb ./; chmod 644 logcompress_mongodb; chown root:root logcompress_mongodb
+  template: src="templates/etc/logrotate.d/logcompress_mongodb" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### start ###
+- name: service mongod start; chkconfig mongod on
+  service: name=mongod state=started enabled=yes

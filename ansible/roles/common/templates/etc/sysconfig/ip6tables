@@ -72,6 +72,15 @@
 {% endif %}
 {% endfor %}
 {% endif %}
+{% if ip6tables_mongodb_internal_addresses != '' %}
+# TCP27017番ポート(MongoDB)へのアクセスを許可
+{% set addresses = ip6tables_mongodb_internal_addresses | from_json %}
+{% for address in addresses %}
+{% if address != '' %}
+-A INPUT -s {{ address }} -p tcp -m tcp --dport 27017 -j ACCEPT
+{% endif %}
+{% endfor %}
+{% endif %}
 
 # 上記のルールにマッチしなかったアクセスはログを記録して破棄
 -A INPUT -m limit --limit 1/sec -j LOG --log-prefix "[IPTABLES INPUT] : "

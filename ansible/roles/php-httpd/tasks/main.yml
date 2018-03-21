@@ -1,5 +1,5 @@
 ### yum ###
-- name: yum -y --enablerepo=epel install php php-devel php-gd php-gmp php-intl php-mbstring php-mcrypt php-pdo php-pear php-xml php-pecl-imagick php-mysql php-pgsql php-pecl-redis
+- name: yum -y --enablerepo=epel install php php-devel php-gd php-gmp php-intl php-mbstring php-mcrypt php-pdo php-pear php-xml php-pecl-imagick php-mysql php-pgsql php-pecl-redis php-pecl-mongo
   yum: name={{ item }} state=present enablerepo=epel
   with_items:
     - php
@@ -20,6 +20,8 @@
     - php-pgsql
     # Use Redis
     - php-pecl-redis
+    # Use MongoDB
+    - php-pecl-mongo
   notify: service httpd restart
 
 ### html ###  *** Tips: What you set with Apache will return when installing PHP

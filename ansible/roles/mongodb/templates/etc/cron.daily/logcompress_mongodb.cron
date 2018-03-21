@@ -1,10 +1,10 @@
 #!/bin/sh
 
-BATCH_NAME='logcompress_postgresql'
+BATCH_NAME='logcompress_mongodb'
 LOG_FILE="/var/log/$BATCH_NAME.log"
-TARGET_PATH='/var/log/pgsql'
-EXT_NAME='.log'
-RM_NAME="*${EXT_NAME}*"
+TARGET_PATH='/var/log/mongodb'
+EXT_NAME='.log.*'
+RM_NAME="*${EXT_NAME}"
 {% if hosts_env == 'development' or hosts_env == 'test' %}
 RM_MTIME=7
 {% else %}
@@ -42,8 +42,7 @@ rm_target_files() {
 }
 
 gzip_target_files() {
-	now=`date +"%Y%m%d"`
-	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "*$EXT_NAME" -not -name "*$now*" -type f`
+	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "*$EXT_NAME" -not -name '*.gz' -daystart -mtime +0 -type f`
 	for file in $files; do
 		fuser $file > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 1 ]; then
