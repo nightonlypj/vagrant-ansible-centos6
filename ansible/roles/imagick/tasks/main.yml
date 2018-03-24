@@ -1,0 +1,6 @@
+### yum ###
+- name: yum -y install ImageMagick ImageMagick-devel
+  yum: name={{ item }} state=present
+  with_items:
+    - ImageMagick
+    - ImageMagick-devel

@@ -32,6 +32,7 @@ ansible
         mysql           ：MySQLの設定
         postgresql      ：PostgreSQLの設定
         redis           ：Redisの設定
+        imagick         ：ImageMagickの設定
         httpd           ：Apacheの設定　※Load Balancer対応/Let's Encrypt自動更新対応
         php-httpd       ：PHP for Apacheの設定
     ansible.cfg     ：Ansibleの設定ファイル
