@@ -1,0 +1,65 @@
+#!/bin/sh
+
+BATCH_NAME='renew_letsencrypt'
+LOG_FILE="/var/log/$BATCH_NAME.log"
+
+error_msg=''
+write_log () {
+	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
+	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
+}
+
+send_error_mail () {
+	[ -n "$error_msg" ] && return
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
+	write_log 'INFO' 'Send error mail'
+}
+
+renew_certificate() {
+	# Workaround for https://stackoverflow.com/questions/38170100/letsencrypt-importerror-no-module-named-interface-on-amazon-linux-while-renewin
+	unset PYTHON_INSTALL_LAYOUT
+
+	ionice -c 2 -n 7 nice -n 19 certbot-auto renew > $1 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' 'certbot-auto renew'
+		return
+	fi
+	write_log 'INFO' 'certbot-auto renew'
+
+	state=`cat $1 | grep '(success)'`
+	if [ -z "$state" ]; then
+		write_log 'INFO' 'Skip reload http'
+		return
+	fi
+
+	service httpd status > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'INFO' 'Not running httpd'
+	else
+		service httpd reload > $1 2>&1
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' 'Reload httpd'
+		else
+			write_log 'INFO' 'Reload httpd'
+		fi
+	fi
+
+	service nginx status > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'INFO' 'Not running nginx'
+	else
+		service nginx reload > $1 2>&1
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' 'Reload nginx'
+		else
+			write_log 'INFO' 'Reload nginx'
+		fi
+	fi
+}
+
+write_log 'INFO' '=== START ==='
+tempfile=$(mktemp)
+renew_certificate $tempfile
+rm -f $tempfile
+send_error_mail
+write_log 'INFO' '=== END ==='

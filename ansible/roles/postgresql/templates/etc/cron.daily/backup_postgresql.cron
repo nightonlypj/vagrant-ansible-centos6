@@ -4,7 +4,7 @@ BATCH_NAME='backup_postgresql'
 LOG_FILE="/var/log/$BATCH_NAME.log"
 TARGET_PATH='/var/backup/pg_dump'
 EXT_NAME='.sql'
-RM_NAME="*${EXT_NAME}*"
+TARGET_NAME="*_*${EXT_NAME}*"
 {% if hosts_env == 'development' or hosts_env == 'test' %}
 RM_MTIME=2
 {% else %}
@@ -13,74 +13,75 @@ RM_MTIME=7
 ATTR_CODE=660
 GROUP_NAME='wheel'
 
-echo_log () {
+error_msg=''
+write_log () {
 	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
 	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
 }
 
 send_error_mail () {
+	[ -n "$error_msg" ] && return
 	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
-	echo_log 'INFO' 'Send error mail'
+	write_log 'INFO' 'Send error mail'
 }
 
-rm_target_files() {
-	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "$RM_NAME" -daystart -mtime +$RM_MTIME -type f`
+delete_target_files() {
+	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "$TARGET_NAME" -daystart -mtime +$RM_MTIME -type f`
 	for file in $files; do
 		fuser $file > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 1 ]; then
-			echo_log 'INFO' "Skip $file"
+			write_log 'INFO' "Skip $file"
 			continue
 		fi
 
 		ionice -c 2 -n 7 nice -n 19 rm $file > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 0 ]; then
-			echo_log 'ERROR' "Delete $file"
+			write_log 'ERROR' "Delete $file"
 			continue
 		fi
-		echo_log 'INFO' "Delete $file"
+		write_log 'INFO' "Delete $file"
 	done
 }
 
-dump_and_gzip_files() {
+dump_compress_files() {
 	databases=`echo "SELECT datname FROM pg_database;" | sudo -u postgres psql -A -t 2>> $LOG_FILE`
 	if [ $? -ne 0 ]; then
-		echo_log 'ERROR' 'Connect'
+		write_log 'ERROR' 'Connect'
 		return
 	fi
-	echo_log 'INFO' 'Connect'
+	write_log 'INFO' 'Connect'
 
 	for database in $databases; do
 		if [ "$database" = 'template0' ]; then
-			echo_log 'INFO' "Skip $database"
+			write_log 'INFO' "Skip $database"
 			continue
 		fi
 
 		file="$TARGET_PATH/${database}_`date "+%Y%m%d"`$EXT_NAME"
 		ionice -c 2 -n 7 nice -n 19 sudo -u postgres pg_dump -O $database > $file 2>> $LOG_FILE
 		if [ $? -ne 0 ]; then
-			echo_log 'ERROR' "Dump $file"
+			write_log 'ERROR' "Dump $file"
 			continue
 		fi
-		echo_log 'INFO' "Dump $file"
+		write_log 'INFO' "Dump $file"
 
 		ionice -c 2 -n 7 nice -n 19 gzip -f $file > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 0 ]; then
-			echo_log 'ERROR' "Compress $file -> .gz"
+			write_log 'ERROR' "Compress $file -> .gz"
 			continue
 		fi
-		echo_log 'INFO' "Compress $file -> .gz"
+		write_log 'INFO' "Compress $file -> .gz"
 
 		chmod $ATTR_CODE $file.gz > /dev/null 2>> $LOG_FILE
-		[ $? -ne 0 ] && echo_log 'ERROR' "Chmod $file.gz"
+		[ $? -ne 0 ] && write_log 'ERROR' "Chmod $file.gz"
 
 		chgrp $GROUP_NAME $file.gz > /dev/null 2>> $LOG_FILE
-		[ $? -ne 0 ] && echo_log 'ERROR' "Chgrp $file.gz"
+		[ $? -ne 0 ] && write_log 'ERROR' "Chgrp $file.gz"
 	done
 }
 
-error_msg=''
-echo_log 'INFO' '=== START ==='
-rm_target_files
-dump_and_gzip_files
-[ -n "$error_msg" ] && send_error_mail
-echo_log 'INFO' '=== END ==='
+write_log 'INFO' '=== START ==='
+delete_target_files
+dump_compress_files
+send_error_mail
+write_log 'INFO' '=== END ==='

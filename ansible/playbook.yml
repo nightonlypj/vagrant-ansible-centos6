@@ -39,6 +39,9 @@
     # Use ImageMagick
     - role: imagick
       tags: imagick
+    # Use Let's Encrypt
+    - role: letsencrypt
+      tags: letsencrypt
     # Use Apache  *** Tips: Please change or add [DocumentRoot,Allow from] from [roles/httpd/templates/etc/httpd/conf.d/z_front.conf,allow-ip.inc]
     - role: httpd
       tags: httpd

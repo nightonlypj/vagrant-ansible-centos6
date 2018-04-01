@@ -6,61 +6,62 @@ TARGET_PATH='/var/spool/.notice_ssh_login'
 ATTR_CODE=622
 GROUP_NAME='root'
 
-echo_log () {
+error_msg=''
+write_log () {
 	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
 	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
 }
 
 send_error_mail () {
+	[ -n "$error_msg" ] && return
 	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
-	echo_log 'INFO' 'Send error mail'
+	write_log 'INFO' 'Send error mail'
 }
 
 send_report_mail () {
 	if [ ! -e "$TARGET_PATH" ]; then
-		echo_log 'ERROR' "Not found $TARGET_PATH"
+		write_log 'ERROR' "Not found $TARGET_PATH"
 		return
 	fi
 	if [ ! -s "$TARGET_PATH" ]; then
-		echo_log 'INFO' 'Skip send mail'
+		write_log 'INFO' 'Skip send mail'
 		return
 	fi
 
 	new=${TARGET_PATH}.new
 	touch $new > /dev/null 2>> $LOG_FILE
 	if [ $? -ne 0 ]; then
-		echo_log 'ERROR' "Touch $new"
+		write_log 'ERROR' "Touch $new"
 		return
 	fi
 	chmod $ATTR_CODE $new > /dev/null 2>> $LOG_FILE
 	if [ $? -ne 0 ]; then
-		echo_log 'ERROR' "Chmod $new"
+		write_log 'ERROR' "Chmod $new"
 		return
 	fi
 	chgrp $GROUP_NAME $new > /dev/null 2>> $LOG_FILE
 	if [ $? -ne 0 ]; then
-		echo_log 'ERROR' "Chgrp $new"
+		write_log 'ERROR' "Chgrp $new"
 		return
 	fi
 
 	old=${TARGET_PATH}.old
 	mv $TARGET_PATH $old > /dev/null 2>> $LOG_FILE
 	if [ $? -ne 0 ]; then
-		echo_log 'ERROR' "Move $TARGET_PATH -> $old"
+		write_log 'ERROR' "Move $TARGET_PATH -> $old"
 		return
 	fi
 	mv $new $TARGET_PATH > /dev/null 2>> $LOG_FILE
 	if [ $? -ne 0 ]; then
-		echo_log 'ERROR' "Move $new -> $TARGET_PATH"
+		write_log 'ERROR' "Move $new -> $TARGET_PATH"
 		return
 	fi
 
 	cat $old | mail -s "$BATCH_NAME report for `hostname`" -r crond root
-	echo_log 'INFO' 'Send mail'
+	write_log 'INFO' 'Send mail'
 }
 
-error_msg=''
-echo_log 'INFO' '=== START ==='
+write_log 'INFO' '=== START ==='
 send_report_mail
-[ -n "$error_msg" ] && send_error_mail
-echo_log 'INFO' '=== END ==='
+send_error_mail
+write_log 'INFO' '=== END ==='
