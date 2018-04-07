@@ -63,9 +63,6 @@
 
 - name: service crond start; chkconfig crond on
   service: name=crond state=started enabled=yes
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service haldaemon start; chkconfig haldaemon on
-  service: name=haldaemon state=started enabled=yes
 - name: service irqbalance start; chkconfig irqbalance on
   service: name=irqbalance state=started enabled=yes
 - name: service messagebus start; chkconfig messagebus on
@@ -74,6 +71,9 @@
   service: name=psacct state=started enabled=yes
 - name: service rsyslog start; chkconfig rsyslog on
   service: name=rsyslog state=started enabled=yes
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) service haldaemon start; chkconfig haldaemon on
+  service: name=haldaemon state=started enabled=yes
 - when: ansible_distribution == 'CentOS'
   name: (CentOS) service sysstat start; chkconfig sysstat on
   service: name=sysstat state=started enabled=yes
@@ -103,6 +103,8 @@
   template: src="templates/etc/security/limits.conf" dest="/etc/security/" mode=644 owner=root group=root backup=yes
 - name: cd /etc/pam.d; cp /vagrant/ansible/roles/common/templates/etc/pam.d/su ./; chmod 644 su; chown root:root su
   template: src="templates/etc/pam.d/su" dest="/etc/pam.d/" mode=644 owner=root group=root backup=yes
+- name: cd /usr/share/logwatch/default.conf; cp /vagrant/ansible/roles/common/templates/usr/share/logwatch/default.conf/logwatch.conf ./; chmod 644 logwatch.conf; chown root:root logwatch.conf
+  template: src="templates/usr/share/logwatch/default.conf/logwatch.conf" dest="/usr/share/logwatch/default.conf/" mode=644 owner=root group=root backup=yes
 
 ### aliases ###
 - name: cd /etc; cp /vagrant/ansible/roles/common/templates/etc/aliases ./; chmod 644 aliases; chown root:root aliases
@@ -111,7 +113,7 @@
 
 ### cron ###
 - when: hosts_env != 'development'
-  name: (!development) crontab <- Rebooted notice
+  name: (!development) echo '@reboot (date; echo -e "\n- dmesg -"; dmesg; echo -e "\n- /var/log/messages -"; tail -100 /var/log/messages) | mail -s "Rebooted notice of `hostname`" -r crond warning' | crontab -
   cron:
     name: Rebooted notice
     special_time: reboot

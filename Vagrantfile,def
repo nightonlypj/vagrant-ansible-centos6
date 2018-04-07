@@ -46,6 +46,8 @@ Vagrant.configure("2") do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 ### START ###
+  config.vbguest.auto_update = false
+  config.vbguest.no_remote = true
   config.vm.synced_folder ".", "/vagrant", mount_options: ['dmode=777', 'fmode=777']
 ### END ###
 
@@ -94,6 +96,7 @@ Vagrant.configure("2") do |config|
     echo "admin:abc123" | chpasswd
     echo "root:xyz789" | chpasswd
     # ansible
+    yum -y install epel-release
     yum -y --enablerepo=epel install ansible
     mkdir -p /vagrant/log
     mv /vagrant/log/ansible.log /vagrant/log/ansible.log,`date +"%Y%m%d%H%M%S"` > /dev/null 2>&1

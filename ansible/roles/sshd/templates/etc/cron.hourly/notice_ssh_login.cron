@@ -13,7 +13,7 @@ write_log () {
 }
 
 send_error_mail () {
-	[ -n "$error_msg" ] && return
+	[ -z "$error_msg" ] && return
 	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
 	write_log 'INFO' 'Send error mail'
 }

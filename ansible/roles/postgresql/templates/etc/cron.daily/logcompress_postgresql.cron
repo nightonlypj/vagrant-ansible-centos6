@@ -3,8 +3,8 @@
 BATCH_NAME='logcompress_postgresql'
 LOG_FILE="/var/log/$BATCH_NAME.log"
 TARGET_PATH='/var/log/pgsql'
-TARGET_NAME='*.*.*'
-NOT_TARGET_NAME=`date +"*.%Y%m%d.*"`
+TARGET_NAME='*-*.*'
+NOT_TARGET_NAME=`date +"*-%Y%m%d.*"`
 {% if hosts_env == 'development' or hosts_env == 'test' %}
 RM_MTIME=7
 {% else %}
@@ -20,7 +20,7 @@ write_log () {
 }
 
 send_error_mail () {
-	[ -n "$error_msg" ] && return
+	[ -z "$error_msg" ] && return
 	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
 	write_log 'INFO' 'Send error mail'
 }

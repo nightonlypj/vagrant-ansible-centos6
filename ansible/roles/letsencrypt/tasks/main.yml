@@ -12,7 +12,7 @@
 
 - when: httpd_enable_letsencrypt == 1
   name: (Let's Encrypt) cd /etc/cron.weekly; cp /vagrant/ansible/roles/letsencrypt/templates/etc/cron.weekly/renew_letsencrypt.cron ./; chmod 740 renew_letsencrypt.cron; chown root:wheel renew_letsencrypt.cron
-  copy: src="templates/etc/cron.weekly/renew_letsencrypt.cron" dest="/etc/cron.weekly/" mode=740 owner=root group=wheel
+  template: src="templates/etc/cron.weekly/renew_letsencrypt.cron" dest="/etc/cron.weekly/" mode=740 owner=root group=wheel
 - when: httpd_enable_letsencrypt == 1
   name: (Let's Encrypt) cd /etc/logrotate.d; cp /vagrant/ansible/roles/letsencrypt/templates/etc/logrotate.d/renew_letsencrypt ./; chmod 644 renew_letsencrypt; chown root:root renew_letsencrypt
   template: src="templates/etc/logrotate.d/renew_letsencrypt" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no

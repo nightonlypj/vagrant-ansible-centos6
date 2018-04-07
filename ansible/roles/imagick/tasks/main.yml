@@ -4,3 +4,7 @@
   with_items:
     - ImageMagick
     - ImageMagick-devel
+
+### conf ###
+- name: cd /etc/ImageMagick; cp /vagrant/ansible/roles/imagick/templates/etc/ImageMagick/policy.xml ./; chmod 644 policy.xml; chown root:root policy.xml
+  template: src="templates/etc/ImageMagick/policy.xml" dest="/etc/ImageMagick/" mode=644 owner=root group=root backup=yes

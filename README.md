@@ -61,7 +61,7 @@ IPアドレス変更(HTTP/S等の接続用)：使用してないIPを指定
 >  config.vm.network "public_network", ip: "`192.168.12.206`"
 
 ※複数のNICに繋がっている場合はブリッジアダプターを設定しておくと便利  
->  config.vm.network "public_network", ip: "`192.168.12.206`"`, bridge: "en1: Wi-Fi (AirPort)"`
+>  config.vm.network "public_network", ip: "`192.168.12.206`"`, bridge: "en0: Wi-Fi (AirPort)"`
 
 ホスト名変更  
 >   config.vm.hostname = "`dev-centos6.local`"
@@ -97,11 +97,15 @@ Windowsコマンドプロンプト/Mac・Linuxターミナル
 ※最新のBoxのURLは、[CentOS6 Vagrant Box提供(VirtualBox向け)](../vagrant-box-centos6)を参照してください。  
 ```
 $ vagrant box add CentOS6 https://github.com/nightonlypj/vagrant-box-centos6/CentOS6.9.box
+$ vagrant plugin install vagrant-vbguest
 $ vagrant up
+$ vagrant vbguest
+$ vagrant reload
 ```
 
 SSHターミナル  
-※ユーザー名・パスワード・ポートは初期設定の値に変更して実行してください。
+※ユーザー名・パスワード・ポートは初期設定の値に変更して実行してください。  
+※Mac・Linuxの場合は`vagrant ssh`でも接続可（Windowsは設定すれば接続可）
 ```
 $ ssh admin@127.0.0.1 -p 2206
 : abc123
