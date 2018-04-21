@@ -1,0 +1,68 @@
+### yum ###
+- import_tasks: roles/common/tasks/epel.yml
+- name: yum -y --enablerepo=epel install php php-devel php-gd php-gmp php-intl php-mbstring php-mcrypt php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysql php-pgsql php-pecl-redis php-pecl-mongo
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - php
+    - php-devel
+    - php-gd
+    - php-gmp
+    - php-intl
+    - php-mbstring
+    - php-mcrypt
+    - php-pdo
+    - php-pear
+    - php-xml
+    - php-fpm
+    # Use ImageMagick
+    - php-pecl-imagick
+    # Use MySQL
+    - php-mysql
+    # Use PostgreSQL
+    - php-pgsql
+    # Use Redis
+    - php-pecl-redis
+    # Use MongoDB
+    - php-pecl-mongo
+  notify: service php-fpm restart
+
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/php-nginx/templates/etc/php.ini ./; chmod 644 php.ini; chown root:root php.ini
+  template: src="templates/etc/php.ini" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service php-fpm restart
+- name: cd /etc/php.d; cp /vagrant/ansible/roles/php-nginx/templates/etc/php.d/* ./; chmod 644 *; chown root:root *
+  template: src={{ item }} dest="/etc/php.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/php.d/*"
+  notify: service php-fpm restart
+
+- name: cd /etc; cp /vagrant/ansible/roles/php-nginx/templates/etc/php-fpm.conf ./; chmod 644 php-fpm.conf; chown root:root php-fpm.conf
+  template: src="templates/etc/php-fpm.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service php-fpm restart
+- name: cd /etc/php-fpm.d; cp /vagrant/ansible/roles/php-nginx/templates/etc/php-fpm.d/* ./; chmod 644 *; chown root:root *
+  template: src={{ item }} dest="/etc/php-fpm.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/php-fpm.d/*"
+  notify: service php-fpm restart
+
+- name: cd /var/lib/php; mkdir -p {session,wsdlcache}; chmod 770 {session,wsdlcache}; chown root:nginx {session,wsdlcache}
+  file: path={{ item }} state=directory mode=770 owner=root group=nginx
+  with_items:
+    - "/var/lib/php/session"
+    - "/var/lib/php/wsdlcache"
+
+### log ###
+- name: cd /var/log; mkdir -p php-fpm; chmod 750 php-fpm; chown nginx:wheel php-fpm
+  file: path="/var/log/php-fpm" state=directory mode=750 owner=nginx group=wheel
+- name: cd /var/log/php-fpm; touch error.log; chmod 644 error.log; chown root:root error.log
+  file: path="/var/log/php-fpm/error.log" state=touch mode=644 owner=root group=root
+
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/php-nginx/templates/etc/logrotate.d/php-fpm ./; chmod 644 php-fpm; chown root:root php-fpm
+  template: src="templates/etc/logrotate.d/php-fpm" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### check/start ###
+- name: php-fpm -t
+  shell: php-fpm -t
+
+- name: service php-fpm start; chkconfig php-fpm on
+  service: name=php-fpm state=started enabled=yes

@@ -1,0 +1,2 @@
+- name: cd /etc/yum.repos.d; cp /vagrant/ansible/roles/nginx/templates/etc/yum.repos.d/nginx.repo ./; chmod 644 nginx.repo; chown root:root nginx.repo
+  template: src="templates/etc/yum.repos.d/nginx.repo" dest="/etc/yum.repos.d/" mode=644 owner=root group=root backup=yes

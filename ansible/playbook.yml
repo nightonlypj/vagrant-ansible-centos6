@@ -43,8 +43,14 @@
     - role: letsencrypt
       tags: letsencrypt
     # Use Apache  *** Tips: Please change or add [DocumentRoot,Allow from] from [roles/httpd/templates/etc/httpd/conf.d/z_front.conf,allow-ip.inc]
-    - role: httpd
-      tags: httpd
-    # Use PHP for Apache  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis] from [roles/php-httpd/tasks/main.yml]
-    - role: php-httpd
-      tags: php-httpd
+#    - role: httpd
+#      tags: httpd
+    # Use PHP for Apache  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-httpd/tasks/main.yml]
+#    - role: php-httpd
+#      tags: php-httpd
+    # Use Nginx
+    - role: nginx
+      tags: nginx
+    # Use PHP for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-nginx/tasks/main.yml]
+    - role: php-nginx
+      tags: php-nginx

@@ -1,3 +1,9 @@
+### user ###
+- name: groupadd -g 48 apache
+  group: name=apache gid=48 state=present
+- name: useradd -g apache -u 48 apache
+  user: name=apache group=apache uid=48 state=present
+
 ### yum ###
 - name: yum -y install httpd httpd-devel mod_ssl
   yum: name={{ item }} state=present
@@ -21,31 +27,38 @@
   notify: service httpd restart
 
 ### log ###
-- name: cd /var/log; mkdir -p httpd; chmod 750 httpd; chown root:wheel httpd
-  file: path="/var/log/httpd" state=directory mode=750 owner=root group=wheel
+- name: cd /var/log; mkdir -p httpd; chmod 750 httpd; chown apache:wheel httpd
+  file: path="/var/log/httpd" state=directory mode=750 owner=apache group=wheel
 
 - name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/httpd/templates/etc/logrotate.d/httpd ./; chmod 644 httpd; chown root:root httpd
   template: src="templates/etc/logrotate.d/httpd" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 
 ### html/cgi-bin ###
-- name: cd /var/www; chmod 771 {.,html,cgi-bin}; chown root:wheel {.,html,cgi-bin}
-  file: path={{ item }} state=directory mode=771 owner=root group=wheel
+- name: cd /var/www; chmod 771 {.,html,cgi-bin}; chown apache:wheel {.,html,cgi-bin}
+  file: path={{ item }} state=directory mode=771 owner=apache group=wheel
   with_items:
     - "/var/www"
     - "/var/www/html"
     - "/var/www/cgi-bin"
 
-- name: cd /var/www/html; cp /vagrant/ansible/roles/httpd/templates/var/www/html/{.ht*,*} ./; chmod 664 {.ht*,*}; chown root:wheel {.ht*,*}
-  copy: src={{ item }} dest="/var/www/html/" mode=664 owner=root group=wheel backup=no
+- name: cd /var/www/html; cp /vagrant/ansible/roles/httpd/templates/var/www/html/{.ht*,*} ./; chmod 664 {.ht*,*}; chown apache:wheel {.ht*,*}
+  copy: src={{ item }} dest="/var/www/html/" mode=664 owner=apache group=wheel backup=no
   with_fileglob:
     - "templates/var/www/html/.ht*"
     - "templates/var/www/html/*"
-
-- name: cd /var/www/cgi-bin; cp /vagrant/ansible/roles/httpd/templates/var/www/cgi-bin/{.ht*,*} ./; chmod 664 {.ht*,*}; chown root:wheel {.ht*,*}
-  copy: src={{ item }} dest="/var/www/cgi-bin/" mode=664 owner=root group=wheel backup=no
+- name: cd /var/www/cgi-bin; cp /vagrant/ansible/roles/httpd/templates/var/www/cgi-bin/{.ht*,*} ./; chmod 664 {.ht*,*}; chown apache:wheel {.ht*,*}
+  copy: src={{ item }} dest="/var/www/cgi-bin/" mode=664 owner=apache group=wheel backup=no
   with_fileglob:
     - "templates/var/www/cgi-bin/.ht*"
     - "templates/var/www/cgi-bin/*"
+
+### home ###
+- name: ln -s /var/log/httpd /home/apache/log
+  file: src="/var/log/httpd" dest="/home/apache/log" state=link
+- name: ln -s /var/www/html /home/apache/html
+  file: src="/var/www/html" dest="/home/apache/html" state=link
+- name: ln -s /var/www/cgi-bin /home/apache/cgi-bin
+  file: src="/var/www/cgi-bin" dest="/home/apache/cgi-bin" state=link
 
 ### check/start ###
 - name: apachectl configtest

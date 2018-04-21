@@ -1,4 +1,5 @@
 ### yum ###
+- import_tasks: roles/common/tasks/epel.yml
 - name: yum -y --enablerepo=epel install php php-devel php-gd php-gmp php-intl php-mbstring php-mcrypt php-pdo php-pear php-xml php-pecl-imagick php-mysql php-pgsql php-pecl-redis php-pecl-mongo
   yum: name={{ item }} state=present enablerepo=epel
   with_items:
@@ -25,8 +26,8 @@
   notify: service httpd restart
 
 ### html ###  *** Tips: What you set with Apache will return when installing PHP
-- name: cd /var/www; chmod 771 html; chown root:wheel html
-  file: path="/var/www/html" state=directory mode=771 owner=root group=wheel
+- name: cd /var/www; chmod 771 html; chown apache:wheel html
+  file: path="/var/www/html" state=directory mode=771 owner=apache group=wheel
 
 ### conf ###
 - name: cd /etc; cp /vagrant/ansible/roles/php-httpd/templates/etc/php.ini ./; chmod 644 php.ini; chown root:root php.ini
@@ -37,6 +38,12 @@
   with_fileglob:
     - "templates/etc/php.d/*"
   notify: service httpd restart
+
+- name: cd /var/lib/php; mkdir -p {session,wsdlcache}; chmod 770 {session,wsdlcache}; chown root:apache {session,wsdlcache}
+  file: path={{ item }} state=directory mode=770 owner=root group=apache
+  with_items:
+    - "/var/lib/php/session"
+    - "/var/lib/php/wsdlcache"
 
 ### check ###
 - name: apachectl configtest

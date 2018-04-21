@@ -36,6 +36,8 @@ ansible
         letsencrypt     ：Let's Encryptの設定　※自動更新対応
         httpd           ：Apacheの設定　※Load Balancer対応
         php-httpd       ：PHP for Apacheの設定
+        nginx           ：Nginxの設定　※Load Balancer対応
+        php-nginx       ：PHP for Nginxの設定(PHP-FPM)
     ansible.cfg     ：Ansibleの設定ファイル
     playbook.yml    ：どの設定ルールを使うかを制御する設定　※使用しないルールはコメントアウトしてください
 README.md       ：説明や使い方（このファイル）

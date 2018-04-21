@@ -1,0 +1,82 @@
+### user ###
+- name: groupadd -g 490 nginx
+  group: name=nginx gid=490 state=present
+- name: useradd -g nginx -u 390 nginx
+  user: name=nginx group=nginx uid=390 state=present
+
+### yum ###
+- when: ansible_distribution == 'CentOS'
+  import_tasks: repos.yml
+- when: ansible_distribution == 'Amazon'
+  import_tasks: roles/common/tasks/epel.yml
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y --enablerepo=nginx install nginx-1.12.1
+  yum: name=nginx-1.12.1 state=present enablerepo=nginx
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y --enablerepo=epel install nginx
+  yum: name=nginx state=present enablerepo=epel
+- name: yum -y install mod_ssl
+  yum: name=mod_ssl state=present
+
+### conf ###
+- name: cd /etc/nginx; cp /vagrant/ansible/roles/nginx/templates/etc/nginx/nginx.conf ./; chmod 644 nginx.conf; chown root:root nginx.conf
+  template: src="templates/etc/nginx/nginx.conf" dest="/etc/nginx/" mode=644 owner=root group=root backup=yes
+  notify: service nginx restart
+- name: cd /etc/nginx/conf.d; cp /vagrant/ansible/roles/nginx/templates/etc/nginx/conf.d/{.ht*,*} ./; chmod 644 {.ht*,*}; chown root:root {.ht*,*}
+  template: src={{ item }} dest="/etc/nginx/conf.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/nginx/conf.d/.ht*"
+    - "templates/etc/nginx/conf.d/*"
+  notify: service nginx restart
+- name: cd /etc/nginx/default.d; cp /vagrant/ansible/roles/nginx/templates/etc/nginx/default.d/{.ht*,*} ./; chmod 644 {.ht*,*}; chown root:root {.ht*,*}
+  template: src={{ item }} dest="/etc/nginx/default.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/nginx/default.d/.ht*"
+    - "templates/etc/nginx/default.d/*"
+  notify: service nginx restart
+
+### log ###
+- name: cd /var/log; mkdir -p nginx; chmod 750 nginx; chown nginx:wheel nginx
+  file: path="/var/log/nginx" state=directory mode=750 owner=nginx group=wheel
+
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/nginx/templates/etc/logrotate.d/nginx ./; chmod 644 nginx; chown root:root nginx
+  template: src="templates/etc/logrotate.d/nginx" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### logwatch ###
+- name: ln -s /usr/share/logwatch/scripts/services/http /usr/share/logwatch/scripts/services/nginx
+  file: src="/usr/share/logwatch/scripts/services/http" dest="/usr/share/logwatch/scripts/services/nginx" state=link
+- name: cd /usr/share/logwatch/default.conf/services; cp /vagrant/ansible/roles/nginx/templates/usr/share/logwatch/default.conf/services/nginx.conf ./; chmod 644 nginx.conf; chown root:root nginx.conf
+  template: src="templates/usr/share/logwatch/default.conf/services/nginx.conf" dest="/usr/share/logwatch/default.conf/services/" mode=644 owner=root group=root backup=yes
+- name: cd /usr/share/logwatch/default.conf/logfiles; cp /vagrant/ansible/roles/nginx/templates/usr/share/logwatch/default.conf/logfiles/nginx.conf ./; chmod 644 nginx.conf; chown root:root nginx.conf
+  template: src="templates/usr/share/logwatch/default.conf/logfiles/nginx.conf" dest="/usr/share/logwatch/default.conf/logfiles/" mode=644 owner=root group=root backup=yes
+
+### html ###
+- name: cd /usr/share/nginx; chmod 771 {.,html}; chown nginx:wheel {.,html}
+  file: path={{ item }} state=directory mode=771 owner=nginx group=wheel
+  with_items:
+    - "/usr/share/nginx"
+    - "/usr/share/nginx/html"
+
+- name: cd /usr/share/nginx/html; rm {50x.html,nginx-logo.png,poweredby.png}
+  file: path={{ item }} state=absent
+  with_items:
+    - "/usr/share/nginx/html/50x.html"
+    - "/usr/share/nginx/html/nginx-logo.png"
+    - "/usr/share/nginx/html/poweredby.png"
+- name: cd /usr/share/nginx/html; cp /vagrant/ansible/roles/nginx/templates/usr/share/nginx/html/* ./; chmod 664 *; chown nginx:wheel *
+  copy: src={{ item }} dest="/usr/share/nginx/html/" mode=664 owner=nginx group=wheel backup=no
+  with_fileglob:
+    - "templates/usr/share/nginx/html/*"
+
+### home ###
+- name: ln -s /var/log/nginx /home/nginx/log
+  file: src="/var/log/nginx" dest="/home/nginx/log" state=link
+- name: ln -s /usr/share/nginx/html /home/nginx/html
+  file: src="/usr/share/nginx/html" dest="/home/nginx/html" state=link
+
+### check/start ###
+- name: nginx -t -c /etc/nginx/nginx.conf
+  shell: nginx -t -c /etc/nginx/nginx.conf
+
+- name: service nginx start; chkconfig nginx on
+  service: name=nginx state=started enabled=yes
