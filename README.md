@@ -30,6 +30,7 @@ ansible
         postfix         ：Postfix(localhost only)の設定
         sshd            ；sshdの設定
         mysql           ：MySQLの設定
+        mysql57         ：MySQL 5.7の設定
         postgresql      ：PostgreSQLの設定
         redis           ：Redisの設定
         imagick         ：ImageMagickの設定

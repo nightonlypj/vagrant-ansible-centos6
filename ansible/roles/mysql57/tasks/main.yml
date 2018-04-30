@@ -1,23 +1,24 @@
 ### yum ###
+- import_tasks: repos.yml
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) yum -y install mysql mysql-server mysql-devel MySQL-python
-  yum: name={{ item }} state=present
+  name: (CentOS) yum -y --enablerepo=mysql57-community install mysql-community-client mysql-community-server mysql-community-devel MySQL-python
+  yum: name={{ item }} state=present enablerepo=mysql57-community
   with_items:
-    - mysql
-    - mysql-server
-    - mysql-devel
+    - mysql-community-client
+    - mysql-community-server
+    - mysql-community-devel
     - MySQL-python
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) yum -y install mysql51 mysql51-server mysql51-devel MySQL-python27
+  name: (Amazon) yum -y install mysql57 mysql57-server mysql57-devel MySQL-python27
   yum: name={{ item }} state=present
   with_items:
-    - mysql51
-    - mysql51-server
-    - mysql51-devel
+    - mysql57
+    - mysql57-server
+    - mysql57-devel
     - MySQL-python27
 
 ### conf ###
-- name: cd /etc; cp /vagrant/ansible/roles/mysql/templates/etc/my.cnf ./; chmod 644 my.cnf; chown root:root my.cnf
+- name: cd /etc; cp /vagrant/ansible/roles/mysql57/templates/etc/my.cnf ./; chmod 644 my.cnf; chown root:root my.cnf
   template: src="templates/etc/my.cnf" dest="/etc/" mode=644 owner=root group=root backup=yes
   notify: service mysqld restart
 
@@ -33,7 +34,11 @@
   name: (development) cd /var/log/mysql; touch general.log; chmod 644 general.log; chown mysql:mysql general.log
   file: path="/var/log/mysql/general.log" state=touch mode=644 owner=mysql group=mysql
 
-- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql/templates/etc/logrotate.d/mysqld ./; chmod 644 mysqld; chown root:root mysqld
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql57/templates/etc/logrotate.d/mysql ./; chmod 644 mysql; chown root:root mysql
+  template: src="templates/etc/logrotate.d/mysql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql57/templates/etc/logrotate.d/mysqld ./; chmod 644 mysqld; chown root:root mysqld
   template: src="templates/etc/logrotate.d/mysqld" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 
 ### backup ###
@@ -42,9 +47,9 @@
   with_items:
     - "/var/backup"
     - "/var/backup/mysqldump"
-- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/mysql/templates/etc/cron.daily/backup_mysql.cron ./; chmod 740 backup_mysql.cron; chown root:wheel backup_mysql.cron
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/mysql57/templates/etc/cron.daily/backup_mysql.cron ./; chmod 740 backup_mysql.cron; chown root:wheel backup_mysql.cron
   template: src="templates/etc/cron.daily/backup_mysql.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
-- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql/templates/etc/logrotate.d/backup_mysql ./; chmod 644 backup_mysql; chown root:root backup_mysql
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql57/templates/etc/logrotate.d/backup_mysql ./; chmod 644 backup_mysql; chown root:root backup_mysql
   template: src="templates/etc/logrotate.d/backup_mysql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 
 ### start ###
@@ -55,8 +60,21 @@
 - name: test ! -e /root/.my.cnf
   stat: path=/root/.my.cnf
   register: f
-- when: not f.stat.exists
-  name: (first) mysql> UPDATE user SET password=PASSWORD('{{ mysql_root_password }}') WHERE User = 'root' AND Host = 'localhost';
+- when: not f.stat.exists and ansible_distribution == 'CentOS'
+  name: (first)(CentOS) cat /var/log/mysql/error.log | grep "temporary password" | awk '{print $11}'
+  shell: cat /var/log/mysql/error.log | grep "temporary password" | awk '{print $11}'
+  register: pw
+- when: not f.stat.exists and ansible_distribution == 'CentOS'
+  name: (first)(CentOS) mysql -u root -p'{{ pw.stdout }}' --connect-expired-password -e "SET GLOBAL validate_password_policy = {{ mysql_validate_password_policy }};"
+  shell: mysql -u root -p'{{ pw.stdout }}' --connect-expired-password -e "SET GLOBAL validate_password_policy = {{ mysql_validate_password_policy }};"
+- when: not f.stat.exists and ansible_distribution == 'CentOS'
+  name: (first)(CentOS) mysql -u root -p'{{ pw.stdout }}' --connect-expired-password -e "SET GLOBAL validate_password_length = {{ mysql_validate_password_length }};"
+  shell: mysql -u root -p'{{ pw.stdout }}' --connect-expired-password -e "SET GLOBAL validate_password_length = {{ mysql_validate_password_length }};"
+- when: not f.stat.exists and ansible_distribution == 'CentOS'
+  name: (first)(CentOS) mysql -u root -p'{{ pw.stdout }}' --connect-expired-password -e "SET PASSWORD FOR root@'localhost' = PASSWORD('{{ mysql_root_password }}');"
+  shell: mysql -u root -p'{{ pw.stdout }}' --connect-expired-password -e "SET PASSWORD FOR root@'localhost' = PASSWORD('{{ mysql_root_password }}');"
+- when: not f.stat.exists and ansible_distribution == 'Amazon'
+  name: (first)(Amazon) mysql> UPDATE user SET password=PASSWORD('{{ mysql_root_password }}') WHERE User = 'root' AND Host = 'localhost';
   mysql_user:
     name: root
     host: localhost
@@ -76,7 +94,7 @@
     - 127.0.0.1
     - ::1
 - when: not f.stat.exists
-  name: cd /root; cp /vagrant/ansible/roles/mysql/templates/root/.my.cnf ./; chmod 600 .my.cnf; chown root:root .my.cnf
+  name: (first) cd /root; cp /vagrant/ansible/roles/mysql57/templates/root/.my.cnf ./; chmod 600 .my.cnf; chown root:root .my.cnf
   template: src="templates/root/.my.cnf" dest="/root/" mode=600 owner=root group=root backup=yes
 
 ### delete anonymous/fqdn ###

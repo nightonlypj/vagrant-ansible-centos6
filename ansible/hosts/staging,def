@@ -56,10 +56,12 @@ ip6tables_redis_internal_addresses=
 iptables_mongodb_internal_addresses='["x.x.x.x"]'
 ip6tables_mongodb_internal_addresses=
 ### MySQL ###
-mysql_root_password=xyz789
+mysql_root_password=changepasswd
 mysql_dbname=mytest
 mysql_username=myuser
-mysql_password=abc123
+mysql_password=changepasswd
+mysql_validate_password_policy=LOW
+mysql_validate_password_length=6
 ### PostgreSQL ###
 postgresql_dbname=pgtest
 postgresql_username=pguser

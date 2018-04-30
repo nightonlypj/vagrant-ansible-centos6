@@ -45,10 +45,12 @@ ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.
 
 [db-servers:vars]
 ### MySQL ###
-mysql_root_password=xyz789
+mysql_root_password=changepasswd
 mysql_dbname=mytest
 mysql_username=myuser
-mysql_password=abc123
+mysql_password=changepasswd
+mysql_validate_password_policy=LOW
+mysql_validate_password_length=6
 ### PostgreSQL ###
 postgresql_dbname=pgtest
 postgresql_username=pguser

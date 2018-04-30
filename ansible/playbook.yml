@@ -20,8 +20,11 @@
   become: true
   roles:
     # Use MySQL
-    - role: mysql
-      tags: mysql
+#    - role: mysql
+#      tags: mysql
+    # Use MySQL 5.7
+    - role: mysql57
+      tags: mysql57
     # Use PostgreSQL
     - role: postgresql
       tags: postgresql
