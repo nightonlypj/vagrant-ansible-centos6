@@ -32,6 +32,7 @@ ansible
         mysql           ：MySQLの設定
         mysql57         ：MySQL 5.7の設定
         postgresql      ：PostgreSQLの設定
+        postgresql96    ：PostgreSQL 9.6の設定
         redis           ：Redisの設定
         imagick         ：ImageMagickの設定
         letsencrypt     ：Let's Encryptの設定　※自動更新対応

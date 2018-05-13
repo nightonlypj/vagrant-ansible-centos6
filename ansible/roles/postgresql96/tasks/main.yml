@@ -1,47 +1,59 @@
 ### yum ###
+- import_tasks: repos.yml
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) yum -y install postgresql postgresql-server postgresql-devel postgresql-contrib python-psycopg2
-  yum: name={{ item }} state=present
+  name: (CentOS) yum -y --enablerepo=pgdg96 install postgresql96 postgresql96-server postgresql96-devel postgresql96-contrib python-psycopg2
+  yum: name={{ item }} state=present enablerepo=pgdg96
   with_items:
-    - postgresql
-    - postgresql-server
-    - postgresql-devel
-    - postgresql-contrib
+    - postgresql96
+    - postgresql96-server
+    - postgresql96-devel
+    - postgresql96-contrib
     - python-psycopg2
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) yum -y install postgresql8 postgresql8-server postgresql8-devel postgresql8-contrib python27-psycopg2
+  name: (Amazon) yum -y install postgresql96 postgresql96-server postgresql96-devel postgresql96-contrib python27-psycopg2
   yum: name={{ item }} state=present
   with_items:
-    - postgresql8
-    - postgresql8-server
-    - postgresql8-devel
-    - postgresql8-contrib
+    - postgresql96
+    - postgresql96-server
+    - postgresql96-devel
+    - postgresql96-contrib
     - python27-psycopg2
 
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) ln -s /usr/pgsql-9.6/bin/pg_config /usr/bin/pg_config
+  file: src="/usr/pgsql-9.6/bin/pg_config" dest="/usr/bin/pg_config" state=link
+
+### Amazon to CentOS ###
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) ln -s /etc/rc.d/init.d/postgresql96 /etc/rc.d/init.d/postgresql-9.6
+  file: src="/etc/rc.d/init.d/postgresql96" dest="/etc/rc.d/init.d/postgresql-9.6" state=link
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) cd /var/lib; mkdir pgsql; chmod 700 pgsql; chown postgres:postgres pgsql
+  file: path="/var/lib/pgsql" state=directory mode=700 owner=postgres group=postgres
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) ln -s /var/lib/pgsql96 /var/lib/pgsql/9.6
+  file: src="/var/lib/pgsql96" dest="/var/lib/pgsql/9.6" state=link
+
 ### init ###
-- name: test ! -e /var/lib/pgsql/data/postgresql.conf
-  stat: path=/var/lib/pgsql/data/postgresql.conf
+- name: test ! -e /var/lib/pgsql/9.6/data/postgresql.conf
+  stat: path=/var/lib/pgsql/9.6/data/postgresql.conf
   register: f
 - when: not f.stat.exists
-  name: (first) /etc/rc.d/init.d/postgresql initdb
-  shell: /etc/rc.d/init.d/postgresql initdb
+  name: (first) /etc/rc.d/init.d/postgresql-9.6 initdb
+  shell: /etc/rc.d/init.d/postgresql-9.6 initdb
 
 ### conf ###
-- name: cd /var/lib/pgsql/data; cp /vagrant/ansible/roles/postgresql/templates/var/lib/pgsql/data/*.conf ./; chmod 600 *.conf; chown postgres:postgres *.conf
-  template: src={{ item }} dest="/var/lib/pgsql/data/" mode=600 owner=postgres group=postgres backup=yes
+- name: cd /var/lib/pgsql/9.6/data; cp /vagrant/ansible/roles/postgresql96/templates/var/lib/pgsql/9.6/data/*.conf ./; chmod 600 *.conf; chown postgres:postgres *.conf
+  template: src={{ item }} dest="/var/lib/pgsql/9.6/data/" mode=600 owner=postgres group=postgres backup=yes
   with_fileglob:
-    - "templates/var/lib/pgsql/data/*.conf"
-  notify: service postgresql restart
-# Ver8.4(Amazon除く)のpsqlコマンドで、ホスト名指定が必要になる為
-- when: ansible_distribution == 'Amazon'
-  name: (Amazon) mkdir -p /var/run/postgresql; chmod 750 /var/run/postgresql; chown postgres:postgres /var/run/postgresql
-  file: path="/var/run/postgresql" state=directory mode=750 owner=postgres group=postgres
+    - "templates/var/lib/pgsql/9.6/data/*.conf"
+  notify: service postgresql-9.6 restart
 
 ### log ###
 - name: cd /var/log; mkdir -p pgsql; chmod 750 pgsql; chown postgres:wheel pgsql
   file: path="/var/log/pgsql" state=directory mode=750 owner=postgres group=wheel
-- name: ln -sfn /var/log/pgsql /var/lib/pgsql/data/pg_log
-  file: src="/var/log/pgsql" dest="/var/lib/pgsql/data/pg_log" state=link force=yes
+- name: ln -sfn /var/log/pgsql /var/lib/pgsql/9.6/data/pg_log
+  file: src="/var/log/pgsql" dest="/var/lib/pgsql/9.6/data/pg_log" state=link force=yes
 
 - name: cd /etc/cron.daily; cp /vagrant/ansible/roles/postgresql/templates/etc/cron.daily/logcompress_postgresql.cron ./; chmod 740 logcompress_postgresql.cron; chown root:wheel logcompress_postgresql.cron
   template: src="templates/etc/cron.daily/logcompress_postgresql.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
@@ -60,8 +72,8 @@
   template: src="templates/etc/logrotate.d/backup_postgresql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 
 ### start ###
-- name: service postgresql start; chkconfig postgresql on
-  service: name=postgresql state=started enabled=yes
+- name: service postgresql-9.6 start; chkconfig postgresql-9.6 on
+  service: name=postgresql-9.6 state=started enabled=yes
 
 ### create database/user ###
 - name: sudo -u postgres createdb {{ postgresql_dbname }}

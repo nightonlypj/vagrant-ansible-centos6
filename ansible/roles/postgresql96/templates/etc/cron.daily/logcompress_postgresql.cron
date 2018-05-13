@@ -1,0 +1,74 @@
+#!/bin/sh
+
+BATCH_NAME='logcompress_postgresql'
+LOG_FILE="/var/log/$BATCH_NAME.log"
+TARGET_PATH='/var/log/pgsql'
+TARGET_NAME='*-*.*'
+NOT_TARGET_NAME=`date +"*-%Y%m%d.*"`
+{% if hosts_env == 'development' or hosts_env == 'test' %}
+RM_MTIME=7
+{% else %}
+RM_MTIME=30
+{% endif %}
+ATTR_CODE=660
+GROUP_NAME='wheel'
+
+error_msg=''
+write_log () {
+	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
+	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
+}
+
+send_error_mail () {
+	[ -z "$error_msg" ] && return
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
+	write_log 'INFO' 'Send error mail'
+}
+
+delete_target_files() {
+	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "$TARGET_NAME" -daystart -mtime +$RM_MTIME -type f`
+	for file in $files; do
+		fuser $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 1 ]; then
+			write_log 'INFO' "Skip $file"
+			continue
+		fi
+
+		ionice -c 2 -n 7 nice -n 19 rm $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' "Delete $file"
+			continue
+		fi
+		write_log 'INFO' "Delete $file"
+	done
+}
+
+compress_target_files() {
+	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "$TARGET_NAME" -not -name "$NOT_TARGET_NAME" -not -name "*.gz" -type f`
+	for file in $files; do
+		fuser $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 1 ]; then
+			write_log 'INFO' "Skip $file"
+			continue
+		fi
+
+		ionice -c 2 -n 7 nice -n 19 gzip -f $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' "Compress $file -> .gz"
+			continue
+		fi
+		write_log 'INFO' "Compress $file -> .gz"
+
+		chmod $ATTR_CODE $file.gz > /dev/null 2>> $LOG_FILE
+		[ $? -ne 0 ] && write_log 'ERROR' "Chmod $file.gz"
+
+		chgrp $GROUP_NAME $file.gz > /dev/null 2>> $LOG_FILE
+		[ $? -ne 0 ] && write_log 'ERROR' "Chgrp $file.gz"
+	done
+}
+
+write_log 'INFO' '=== START ==='
+delete_target_files
+compress_target_files
+send_error_mail
+write_log 'INFO' '=== END ==='

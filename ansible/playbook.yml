@@ -26,8 +26,11 @@
     - role: mysql57
       tags: mysql57
     # Use PostgreSQL
-    - role: postgresql
-      tags: postgresql
+#    - role: postgresql
+#      tags: postgresql
+    # Use PostgreSQL 9.6
+    - role: postgresql96
+      tags: postgresql96
     # Use Redis
     - role: redis
       tags: redis
