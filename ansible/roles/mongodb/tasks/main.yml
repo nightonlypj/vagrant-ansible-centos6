@@ -1,19 +1,19 @@
 ### yum ###
-- import_tasks: roles/common/tasks/epel.yml
-- name: yum --enablerepo=epel install mongodb mongodb-server
-  yum: name={{ item }} state=present enablerepo=epel
+- import_tasks: repos.yml
+- name: yum --enablerepo=mongodb-org install mongodb-org mongodb-org-server
+  yum: name={{ item }} state=present enablerepo=mongodb-org
   with_items:
-    - mongodb
-    - mongodb-server
+    - mongodb-org
+    - mongodb-org-server
 
 ### conf ###
-- name: cd /etc; cp /vagrant/ansible/roles/mongodb/templates/etc/mongodb.conf ./; chmod 644 mongodb.conf; chown root:root mongodb.conf
-  template: src="templates/etc/mongodb.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
+- name: cd /etc; cp /vagrant/ansible/roles/mongodb/templates/etc/mongod.conf ./; chmod 644 mongod.conf; chown root:root mongod.conf
+  template: src="templates/etc/mongod.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
   notify: service mongod restart
 
 ### log ###
-- name: cd /var/log; mkdir -p mongodb; chmod 750 mongodb; chown mongodb:wheel mongodb
-  file: path="/var/log/mongodb" state=directory mode=750 owner=mongodb group=wheel
+- name: cd /var/log; mkdir -p mongodb; chmod 750 mongodb; chown mongod:wheel mongodb
+  file: path="/var/log/mongodb" state=directory mode=750 owner=mongod group=wheel
 - name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mongodb/templates/etc/logrotate.d/mongodb ./; chmod 644 mongodb; chown root:root mongodb
   template: src="templates/etc/logrotate.d/mongodb" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 

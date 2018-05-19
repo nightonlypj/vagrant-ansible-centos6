@@ -1,0 +1,13 @@
+[mongodb-org]
+name=MongoDB Repository
+{% if ansible_distribution == 'Amazon' %}
+baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.6/x86_64/
+{% else %}
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
+{% endif %}
+gpgcheck=1
+### START ###
+#enabled=1
+enabled=0
+### END ###
+gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc

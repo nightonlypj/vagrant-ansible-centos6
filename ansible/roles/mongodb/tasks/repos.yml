@@ -1,0 +1,2 @@
+- name: cd /etc/yum.repos.d; cp /vagrant/ansible/roles/mongodb/templates/etc/yum.repos.d/mongodb-org.repo ./; chmod 644 mongodb-org.repo; chown root:root mongodb-org.repo
+  template: src="templates/etc/yum.repos.d/mongodb-org.repo" dest="/etc/yum.repos.d/" mode=644 owner=root group=root backup=yes
