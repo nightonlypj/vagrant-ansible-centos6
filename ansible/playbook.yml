@@ -45,6 +45,12 @@
     # Use ImageMagick
     - role: imagick
       tags: imagick
+    # Use Java 1.8
+    - role: java18
+      tags: java18
+    # Use Tomcat
+    - role: tomcat
+      tags: tomcat
     # Use Let's Encrypt
     - role: letsencrypt
       tags: letsencrypt

@@ -1,0 +1,6 @@
+### START ###
+/var/log/logcompress_tomcat.log {
+	missingok
+	notifempty
+}
+### END ###

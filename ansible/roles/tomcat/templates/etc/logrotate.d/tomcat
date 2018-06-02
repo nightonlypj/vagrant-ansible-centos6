@@ -1,0 +1,16 @@
+/var/log/tomcat/catalina.out {
+    copytruncate
+### START ###
+#    weekly
+    daily
+#    rotate 52
+{% if hosts_env == 'development' %}
+    rotate 7
+{% else %}
+    rotate 30
+{% endif %}
+#    compress
+### END ###
+    missingok
+    create 0644 tomcat tomcat
+}

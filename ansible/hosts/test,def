@@ -17,6 +17,8 @@ hosts_allow_mysqld=127.0.0.1, {{ hosts_allow_sshd }}, [::1]
 hosts_allow_postgresql=127.0.0.1, {{ hosts_allow_sshd }}, [::1]
 iptables_enable_http_public=1
 ip6tables_enable_http_public=1
+iptables_tomcat_internal_addresses='["x.x.x.x"]'
+ip6tables_tomcat_internal_addresses=
 iptables_mysqld_internal_addresses='["x.x.x.x"]'
 ip6tables_mysqld_internal_addresses=
 iptables_postgresql_internal_addresses='["x.x.x.x"]'
@@ -58,7 +60,11 @@ postgresql_password=changepasswd
 ### END ###
 
 [web-servers:vars]
-### Apache ###
+### Tomcat ###
+tomcat_enable_manager=1
+tomcat_user_name=admin
+tomcat_user_password=changepasswd
+### Apache/Nginx ###
 httpd_front_servername=test.mydomain
 # No use IP limit
 #httpd_enable_ip_limit=0

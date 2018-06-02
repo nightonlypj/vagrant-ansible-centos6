@@ -43,11 +43,23 @@
 -A INPUT -p udp -m udp --dport 33434:33499 -j ACCEPT
 # TCP{{ ansible_ssh_port }}番ポート(SSH)へのアクセスを許可
 -A INPUT -p tcp -m tcp --dport {{ ansible_ssh_port }} -j ACCEPT
+
 {% if iptables_enable_http_public != 0 %}
 # TCP80/443番ポート(HTTP/HTTPS)へのアクセスを許可
 -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 {% endif %}
+
+{% if iptables_tomcat_internal_addresses != '' %}
+# TCP8080番ポート(Tomcat)へのアクセスを許可
+{% set addresses = iptables_tomcat_internal_addresses | from_json %}
+{% for address in addresses %}
+{% if address != '' %}
+-A INPUT -s {{ address }} -p tcp -m tcp --dport 8080 -j ACCEPT
+{% endif %}
+{% endfor %}
+{% endif %}
+
 {% if iptables_mysqld_internal_addresses != '' %}
 # TCP3306番ポート(MySQL)へのアクセスを許可
 {% set addresses = iptables_mysqld_internal_addresses | from_json %}
@@ -57,6 +69,7 @@
 {% endif %}
 {% endfor %}
 {% endif %}
+
 {% if iptables_postgresql_internal_addresses != '' %}
 # TCP5432番ポート(PostgreSQL)へのアクセスを許可
 {% set addresses = iptables_postgresql_internal_addresses | from_json %}
@@ -66,6 +79,7 @@
 {% endif %}
 {% endfor %}
 {% endif %}
+
 {% if iptables_redis_internal_addresses != '' %}
 # TCP6379番ポート(Redis)へのアクセスを許可
 {% set addresses = iptables_redis_internal_addresses | from_json %}
@@ -75,6 +89,7 @@
 {% endif %}
 {% endfor %}
 {% endif %}
+
 {% if iptables_mongodb_internal_addresses != '' %}
 # TCP27017番ポート(MongoDB)へのアクセスを許可
 {% set addresses = iptables_mongodb_internal_addresses | from_json %}

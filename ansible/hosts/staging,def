@@ -47,6 +47,8 @@ hosts_allow_mysqld=127.0.0.1, x.x.x.x, [::1]
 hosts_allow_postgresql=127.0.0.1, x.x.x.x, [::1]
 iptables_enable_http_public=0
 ip6tables_enable_http_public=0
+iptables_tomcat_internal_addresses=
+ip6tables_tomcat_internal_addresses=
 iptables_mysqld_internal_addresses='["x.x.x.x"]'
 ip6tables_mysqld_internal_addresses=
 iptables_postgresql_internal_addresses='["x.x.x.x"]'
@@ -82,7 +84,11 @@ iptables_redis_internal_addresses=
 ip6tables_redis_internal_addresses=
 iptables_mongodb_internal_addresses=
 ip6tables_mongodb_internal_addresses=
-### Apache ###
+### Tomcat ###
+tomcat_enable_manager=0
+tomcat_user_name=
+tomcat_user_password=
+### Apache/Nginx ###
 httpd_front_servername=staging.mydomain
 # No use IP limit
 httpd_enable_ip_limit=0

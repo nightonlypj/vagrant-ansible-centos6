@@ -1,0 +1,30 @@
+### yum ###
+- import_tasks: roles/common/tasks/epel.yml
+- name: yum -y --enablerepo=epel install tomcat tomcat-native tomcat-admin-webapps
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - tomcat
+    - tomcat-native
+    - tomcat-admin-webapps
+
+### conf ###
+- name: cd /etc/tomcat; cp /vagrant/ansible/roles/tomcat/templates/etc/tomcat/* ./; chmod 644 *; chown root:tomcat *
+  template: src={{ item }} dest="/etc/tomcat/" mode=644 owner=root group=tomcat backup=yes
+  with_fileglob:
+    - "templates/etc/tomcat/*"
+  notify: service tomcat restart
+
+### log ###
+- name: cd /var/log; mkdir -p tomcat; chmod 750 tomcat; chown tomcat:wheel tomcat
+  file: path="/var/log/tomcat" state=directory mode=750 owner=tomcat group=wheel
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/tomcat/templates/etc/logrotate.d/tomcat ./; chmod 644 tomcat; chown root:root tomcat
+  template: src="templates/etc/logrotate.d/tomcat" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/tomcat/templates/etc/cron.daily/logcompress_tomcat.cron ./; chmod 740 logcompress_tomcat.cron; chown root:wheel logcompress_tomcat.cron
+  template: src="templates/etc/cron.daily/logcompress_tomcat.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/tomcat/templates/etc/logrotate.d/logcompress_tomcat ./; chmod 644 logcompress_tomcat; chown root:root logcompress_tomcat
+  template: src="templates/etc/logrotate.d/logcompress_tomcat" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### start ###
+- name: service tomcat start; chkconfig tomcat on
+  service: name=tomcat state=started enabled=yes
