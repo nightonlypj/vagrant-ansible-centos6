@@ -4,15 +4,17 @@ Amazon Linux(EC2/Lightsail)対応
 
 ## 前提条件
 
-下記がインストールされている事  
-- Vagrant ( https://www.vagrantup.com/downloads.html )
+下記がインストールされている事
+
+- Vagrant ( https://www.vagrantup.com/downloads.html )  
 - VirtualBox ( https://www.virtualbox.org/wiki/Downloads )
 
 ※VMwareでの動作は未確認です。  
 ※古いバージョンでは動かない場合があります。
 
-作成時に使用したバージョン  
-- Vagrant 1.9.3 (Windows 64-bit)
+作成時に使用したバージョン
+
+- Vagrant 1.9.3 (Windows 64-bit)  
 - VirtualBox 5.1.22 (Windows)
 
 ## ファイル構成
@@ -100,9 +102,9 @@ DNSで設定したホスト名を指定
 ## development使用方法(例)
 
 Windowsコマンドプロンプト/Mac・Linuxターミナル  
-※最新のBoxのURLは、[CentOS6 Vagrant Box提供(VirtualBox向け)](../vagrant-box-centos6)を参照してください。  
+※最新のBoxのURLは、[CentOS6 Vagrant Box提供(VirtualBox向け)](https://gitlab.com/nightonlypj/vagrant-box-centos6)を参照してください。  
 ```
-$ vagrant box add CentOS6 https://github.com/nightonlypj/vagrant-box-centos6/CentOS6.9.box
+$ vagrant box add CentOS6 https://gitlab.com/nightonlypj/vagrant-box-centos6/raw/master/CentOS6.9.box
 $ vagrant plugin install vagrant-vbguest
 $ vagrant up
 $ vagrant vbguest
