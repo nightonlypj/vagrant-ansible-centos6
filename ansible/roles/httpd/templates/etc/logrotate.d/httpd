@@ -8,7 +8,9 @@
 {% endif %}
 ### END ###
     missingok
-    notifempty
+### START ###
+#    notifempty
+### END ###
     sharedscripts
 ### START ###
 #    delaycompress

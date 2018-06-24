@@ -1,7 +1,7 @@
-{% if ansible_distribution == 'CentOS' %}
-#	$OpenBSD: sshd_config,v 1.80 2008/07/02 02:24:18 djm Exp $
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 #	$OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
+{% else %}
+#	$OpenBSD: sshd_config,v 1.80 2008/07/02 02:24:18 djm Exp $
 {% endif %}
 
 # This is the sshd server system-wide configuration file.  See
@@ -11,10 +11,10 @@
 
 # The strategy used for options in the default sshd_config shipped with
 # OpenSSH is to specify options with their default value where
-{% if ansible_distribution == 'CentOS' %}
-# possible, but leave them commented.  Uncommented options change a
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 # possible, but leave them commented.  Uncommented options override the
+{% else %}
+# possible, but leave them commented.  Uncommented options change a
 {% endif %}
 # default value.
 
@@ -34,24 +34,24 @@ Port {{ ansible_ssh_port }}
 #ListenAddress 0.0.0.0
 #ListenAddress ::
 
-{% if ansible_distribution == 'CentOS' %}
+{% if ansible_distribution == 'Amazon' %}
+### START ###
+Protocol 2
+### END ###
+{% else %}
 # Disable legacy (protocol version 1) support in the server for new
 # installations. In future the default will change to require explicit
 # activation of protocol 1
 Protocol 2
-{% elif ansible_distribution == 'Amazon' %}
-### START ###
-Protocol 2
-### END ###
 {% endif %}
 
-{% if ansible_distribution == 'CentOS' %}
+{% if ansible_distribution == 'Amazon' %}
+HostKey /etc/ssh/ssh_host_rsa_key
+{% else %}
 # HostKey for protocol version 1
 #HostKey /etc/ssh/ssh_host_key
 # HostKeys for protocol version 2
 #HostKey /etc/ssh/ssh_host_rsa_key
-{% elif ansible_distribution == 'Amazon' %}
-HostKey /etc/ssh/ssh_host_rsa_key
 {% endif %}
 #HostKey /etc/ssh/ssh_host_dsa_key
 {% if ansible_distribution == 'Amazon' %}
@@ -59,13 +59,13 @@ HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 {% endif %}
 
-{% if ansible_distribution == 'CentOS' %}
+{% if ansible_distribution == 'Amazon' %}
+# Ciphers and keying
+#RekeyLimit default none
+{% else %}
 # Lifetime and size of ephemeral version 1 server key
 #KeyRegenerationInterval 1h
 #ServerKeyBits 1024
-{% elif ansible_distribution == 'Amazon' %}
-# Ciphers and keying
-#RekeyLimit default none
 {% endif %}
 
 # Logging
@@ -83,13 +83,13 @@ SyslogFacility AUTHPRIV
 LoginGraceTime 30s
 ### END ###
 #PermitRootLogin yes
-{% if ansible_distribution == 'CentOS' %}
+{% if ansible_distribution == 'Amazon' %}
+# Only allow root to run commands over ssh, no shell
+PermitRootLogin forced-commands-only
+{% else %}
 ### START ###
 PermitRootLogin no
 ### END ###
-{% elif ansible_distribution == 'Amazon' %}
-# Only allow root to run commands over ssh, no shell
-PermitRootLogin forced-commands-only
 {% endif %}
 #StrictModes yes
 #MaxAuthTries 6
@@ -102,9 +102,7 @@ MaxAuthTries 3
 #RSAAuthentication yes
 {% endif %}
 #PubkeyAuthentication yes
-{% if ansible_distribution == 'CentOS' %}
-#AuthorizedKeysFile	.ssh/authorized_keys
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 
 # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 # but this is overridden so installations will only check .ssh/authorized_keys
@@ -112,12 +110,14 @@ AuthorizedKeysFile .ssh/authorized_keys
 
 #AuthorizedPrincipalsFile none
 
+{% else %}
+#AuthorizedKeysFile	.ssh/authorized_keys
 {% endif %}
 #AuthorizedKeysCommand none
-{% if ansible_distribution == 'CentOS' %}
-#AuthorizedKeysCommandRunAs nobody
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 #AuthorizedKeysCommandUser nobody
+{% else %}
+#AuthorizedKeysCommandRunAs nobody
 {% endif %}
 
 # For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
@@ -127,24 +127,24 @@ AuthorizedKeysFile .ssh/authorized_keys
 {% endif %}
 #HostbasedAuthentication no
 # Change to yes if you don't trust ~/.ssh/known_hosts for
-{% if ansible_distribution == 'CentOS' %}
-# RhostsRSAAuthentication and HostbasedAuthentication
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 # HostbasedAuthentication
+{% else %}
+# RhostsRSAAuthentication and HostbasedAuthentication
 {% endif %}
 #IgnoreUserKnownHosts no
 # Don't read the user's ~/.rhosts and ~/.shosts files
 #IgnoreRhosts yes
 
-{% if ansible_distribution == 'CentOS' %}
+{% if ansible_distribution == 'Amazon' %}
+# EC2 uses keys for remote access
+PasswordAuthentication no
+#PermitEmptyPasswords no
+{% else %}
 # To disable tunneled clear text passwords, change to no here!
 #PasswordAuthentication yes
 #PermitEmptyPasswords no
 PasswordAuthentication yes
-{% elif ansible_distribution == 'Amazon' %}
-# EC2 uses keys for remote access
-PasswordAuthentication no
-#PermitEmptyPasswords no
 {% endif %}
 
 # Change to no to disable s/key passwords
@@ -182,11 +182,11 @@ GSSAPICleanupCredentials yes
 # If you just want the PAM account and session checks to run without
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
-{% if ansible_distribution == 'CentOS' %}
-#UsePAM no
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 # WARNING: 'UsePAM no' is not supported in Amazon Linux AMI and may cause several
 # problems.
+{% else %}
+#UsePAM no
 {% endif %}
 UsePAM yes
 
@@ -211,27 +211,27 @@ X11Forwarding yes
 #PermitTTY yes
 {% endif %}
 #PrintMotd yes
-{% if ansible_distribution == 'CentOS' %}
-#PrintLastLog yes
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 PrintLastLog yes
+{% else %}
+#PrintLastLog yes
 {% endif %}
 #TCPKeepAlive yes
 #UseLogin no
-{% if ansible_distribution == 'CentOS' %}
-#UsePrivilegeSeparation yes
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 UsePrivilegeSeparation sandbox
+{% else %}
+#UsePrivilegeSeparation yes
 {% endif %}
 #PermitUserEnvironment no
 #Compression delayed
 #ClientAliveInterval 0
 #ClientAliveCountMax 3
 #ShowPatchLevel no
-{% if ansible_distribution == 'CentOS' %}
-#UseDNS yes
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 #UseDNS no
+{% else %}
+#UseDNS yes
 {% endif %}
 ### START ###
 UseDNS no

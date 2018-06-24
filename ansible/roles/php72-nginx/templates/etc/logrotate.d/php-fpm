@@ -1,4 +1,8 @@
+{% if ansible_distribution == 'Amazon' %}
+/var/log/php7.2-fpm/*log {
+{% else %}
 /var/log/php-fpm/*log {
+{% endif %}
 ### START ###
     daily
     rotate 30
@@ -12,6 +16,10 @@
 #    delaycompress
 ### END ###
     postrotate
+{% if ansible_distribution == 'Amazon' %}
+	/bin/kill -SIGUSR1 `cat /var/run/php-fpm/php-fpm-7.2.pid 2>/dev/null` 2>/dev/null || true
+{% else %}
 	/bin/kill -SIGUSR1 `cat /var/run/php-fpm/php-fpm.pid 2>/dev/null` 2>/dev/null || true
+{% endif %}
     endscript
 }

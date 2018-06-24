@@ -43,15 +43,15 @@
 
     <policy domain="resource" name="area" value="1gb"/>
 
-{% if ansible_distribution == 'CentOS' %}
-  Note, resource policies are maximums for each instance of ImageMagick (e.g.
-  policy memory limit 1GB, -limit 2GB exceeds policy maximum so memory limit
-  is 1GB).
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
   Define arguments for the memory, map, area, and disk resources with
   SI prefixes (.e.g 100MB).  In addition, resource policies are maximums for
   each instance of ImageMagick (e.g. policy memory limit 1GB, -limit 2GB
   exceeds policy maximum so memory limit is 1GB).
+{% else %}
+  Note, resource policies are maximums for each instance of ImageMagick (e.g.
+  policy memory limit 1GB, -limit 2GB exceeds policy maximum so memory limit
+  is 1GB).
 {% endif %}
 -->
 <policymap>

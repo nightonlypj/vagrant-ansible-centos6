@@ -7,11 +7,11 @@ auth		sufficient	pam_rootok.so
 ### START ###
 auth		required	pam_wheel.so use_uid
 ### END ###
-{% if ansible_distribution == 'CentOS' %}
-auth		include		system-auth
-{% elif ansible_distribution == 'Amazon' %}
+{% if ansible_distribution == 'Amazon' %}
 auth		substack	system-auth
 auth		include		postlogin
+{% else %}
+auth		include		system-auth
 {% endif %}
 account		sufficient	pam_succeed_if.so uid = 0 use_uid quiet
 account		include		system-auth

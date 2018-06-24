@@ -1,0 +1,6 @@
+- name: rpm --import http://rpms.famillecollet.com/RPM-GPG-KEY-remi
+  rpm_key: key=http://rpms.famillecollet.com/RPM-GPG-KEY-remi
+- name: yum -y install http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+  yum: name=http://rpms.famillecollet.com/enterprise/remi-release-6.rpm state=present
+- name: cd /etc/yum.repos.d; cp -a remi-safe.repo remi-safe.repo,def; sed -i -e "s/enabled\s*=\s*1/enabled=0/g" remi-safe.repo
+  replace: dest=/etc/yum.repos.d/remi-safe.repo regexp="enabled\s*=\s*1" replace="enabled=0" backup=yes

@@ -1,6 +1,6 @@
 ### yum ###
 - import_tasks: repos.yml
-- name: yum --enablerepo=mongodb-org install mongodb-org mongodb-org-server
+- name: yum -y --enablerepo=mongodb-org install mongodb-org mongodb-org-server
   yum: name={{ item }} state=present enablerepo=mongodb-org
   with_items:
     - mongodb-org

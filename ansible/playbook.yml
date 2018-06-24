@@ -20,17 +20,17 @@
   become: true
   roles:
     # Use MySQL
-#    - role: mysql
-#      tags: mysql
+    - role: mysql
+      tags: mysql
     # Use MySQL 5.7
-    - role: mysql57
-      tags: mysql57
+#    - role: mysql57
+#      tags: mysql57
     # Use PostgreSQL
-#    - role: postgresql
-#      tags: postgresql
+    - role: postgresql
+      tags: postgresql
     # Use PostgreSQL 9.6
-    - role: postgresql96
-      tags: postgresql96
+#    - role: postgresql96
+#      tags: postgresql96
     # Use Redis
     - role: redis
       tags: redis
@@ -55,14 +55,17 @@
     - role: letsencrypt
       tags: letsencrypt
     # Use Apache  *** Tips: Please change or add [DocumentRoot,Allow from] from [roles/httpd/templates/etc/httpd/conf.d/z_front.conf,allow-ip.inc]
-#    - role: httpd
-#      tags: httpd
+    - role: httpd
+      tags: httpd
     # Use PHP for Apache  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-httpd/tasks/main.yml]
-#    - role: php-httpd
-#      tags: php-httpd
+    - role: php-httpd
+      tags: php-httpd
     # Use Nginx
-    - role: nginx
-      tags: nginx
+#    - role: nginx
+#      tags: nginx
     # Use PHP for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-nginx/tasks/main.yml]
-    - role: php-nginx
-      tags: php-nginx
+#    - role: php-nginx
+#      tags: php-nginx
+    # Use PHP 7.2 for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php72-nginx/tasks/main.yml]
+#    - role: php72-nginx
+#      tags: php72-nginx

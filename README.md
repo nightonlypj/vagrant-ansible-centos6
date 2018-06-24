@@ -44,6 +44,7 @@ ansible
         php-httpd       ：PHP for Apacheの設定
         nginx           ：Nginxの設定　※Load Balancer対応
         php-nginx       ：PHP for Nginxの設定(PHP-FPM)
+        php72-nginx     ：PHP 7.2 for Nginxの設定(PHP-FPM)
     ansible.cfg     ：Ansibleの設定ファイル
     playbook.yml    ：どの設定ルールを使うかを制御する設定　※使用しないルールはコメントアウトしてください
 README.md       ：説明や使い方（このファイル）
@@ -97,7 +98,7 @@ $ vi development
 
 DNSで設定したホスト名を指定  
 > httpd_front_servername=`test.mydomain`  
-※Let's Encryptを使用する場合は、`ansible/roles/httpd/templates/etc/letsencrypt/live/test.mydomain`をホスト名にコピーまたはリネームしてください。
+※Let's Encryptを使用する場合は、`ansible/roles/letsencrypt/templates/etc/letsencrypt/live/test.mydomain`をホスト名にコピーまたはリネームしてください。
 
 ## development使用方法(例)
 

@@ -1,6 +1,5 @@
 ### START ###
 /var/log/backup_mysql.log {
 	missingok
-	notifempty
 }
 ### END ###

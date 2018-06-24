@@ -1,0 +1,122 @@
+### yum ###
+- when: ansible_distribution == 'CentOS'
+  import_tasks: roles/common/tasks/remi.yml
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-mcrypt php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
+  yum: name={{ item }} state=present enablerepo=remi-php72,remi-safe,epel
+  with_items:
+    - php
+    - php-devel
+    - php-gd
+    - php-gmp
+    - php-mbstring
+    - php-mcrypt
+    - php-pdo
+    - php-pear
+    - php-xml
+    - php-fpm
+    # Use ImageMagick
+    - php-pecl-imagick
+    # Use MySQL
+    - php-mysqlnd
+    # Use PostgreSQL
+    - php-pgsql
+    # Use Redis
+    - php-pecl-redis
+    # Use MongoDB
+    - php-pecl-mongodb
+  notify: service php-fpm restart
+
+# Tips: conflict httpd24/httpd24-tools with httpd/httpd-tools
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y remove httpd httpd-tools
+  yum: name={{ item }} state=removed
+  with_items:
+    - httpd
+    - httpd-tools
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y install mod24_ssl
+  yum: name=mod24_ssl state=present
+
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y --enablerepo=epel install php72 php72-devel php72-gd php72-gmp php72-mbstring php72-mcrypt php72-pdo php7-pear php72-xml php72-fpm php72-pecl-imagick php72-mysqlnd php72-pgsql php72-pecl-redis php72-pecl-mongodb
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - php72
+    - php72-devel
+    - php72-gd
+    - php72-gmp
+    - php72-mbstring
+    - php72-mcrypt
+    - php72-pdo
+    - php7-pear
+    - php72-xml
+    - php72-fpm
+    # Use ImageMagick
+    - php72-pecl-imagick
+    # Use MySQL
+    - php72-mysqlnd
+    # Use PostgreSQL
+    - php72-pgsql
+    # Use Redis
+# TODO: Not found php72-redis
+#    - php72-pecl-redis
+    # Use MongoDB
+# TODO: Not found php-mongodb
+#    - php72-pecl-mongodb
+  notify: service php-fpm restart
+
+### conf ###
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php.ini ./; chmod 644 php.ini; chown root:root php.ini
+  template: src="templates/etc/php.ini" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service php-fpm restart
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php.ini ./php-7.2.ini; chmod 644 php-7.2.ini; chown root:root php-7.2.ini
+  template: src="templates/etc/php.ini" dest="/etc/php-7.2.ini" mode=644 owner=root group=root backup=yes
+  notify: service php-fpm restart
+- name: cd /etc/php.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php.d/* ./; chmod 644 *; chown root:root *
+  template: src={{ item }} dest="/etc/php.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/php.d/*"
+  notify: service php-fpm restart
+
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php-fpm.conf ./; chmod 644 php-fpm.conf; chown root:root php-fpm.conf
+  template: src="templates/etc/php-fpm.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service php-fpm restart
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php-fpm-7.2.conf ./; chmod 644 php-fpm-7.2.conf; chown root:root php-fpm-7.2.conf
+  template: src="templates/etc/php-fpm.conf" dest="/etc/php-fpm-7.2.conf" mode=644 owner=root group=root backup=yes
+  notify: service php-fpm restart
+- name: cd /etc/php-fpm.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php-fpm.d/* ./; chmod 644 *; chown root:root *
+  template: src={{ item }} dest="/etc/php-fpm.d/" mode=644 owner=root group=root backup=yes
+  with_fileglob:
+    - "templates/etc/php-fpm.d/*"
+  notify: service php-fpm restart
+
+- name: cd /var/lib/php; mkdir -p {session,wsdlcache}; chmod 770 {session,wsdlcache}; chown root:nginx {session,wsdlcache}
+  file: path={{ item }} state=directory mode=770 owner=root group=nginx
+  with_items:
+    - "/var/lib/php/session"
+    - "/var/lib/php/wsdlcache"
+
+### log ###
+- name: cd /var/log; mkdir -p php-fpm; chmod 750 php-fpm; chown nginx:wheel php-fpm
+  file: path="/var/log/php-fpm" state=directory mode=750 owner=nginx group=wheel
+- name: cd /var/log/php-fpm; touch error.log; chmod 644 error.log; chown root:root error.log
+  file: path="/var/log/php-fpm/error.log" state=touch mode=644 owner=root group=root
+
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) cd /etc/logrotate.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/logrotate.d/php-fpm ./; chmod 644 php-fpm; chown root:root php-fpm
+  template: src="templates/etc/logrotate.d/php-fpm" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) cd /etc/logrotate.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/logrotate.d/php-fpm php-fpm-7.2; chmod 644 php-fpm-7.2; chown root:root php-fpm-7.2
+  template: src="templates/etc/logrotate.d/php-fpm" dest="/etc/logrotate.d/php-fpm-7.2" mode=644 owner=root group=root backup=no
+
+### check/start ###
+- name: php-fpm -t
+  shell: php-fpm -t
+
+- name: service php-fpm start; chkconfig php-fpm on
+  service: name=php-fpm state=started enabled=yes

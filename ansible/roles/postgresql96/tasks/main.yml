@@ -20,8 +20,8 @@
     - python27-psycopg2
 
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) ln -s /usr/pgsql-9.6/bin/pg_config /usr/bin/pg_config
-  file: src="/usr/pgsql-9.6/bin/pg_config" dest="/usr/bin/pg_config" state=link
+  name: (CentOS) ln -sfn /usr/pgsql-9.6/bin/pg_config /usr/bin/pg_config
+  file: src="/usr/pgsql-9.6/bin/pg_config" dest="/usr/bin/pg_config" state=link force=yes
 
 ### Amazon to CentOS ###
 - when: ansible_distribution == 'Amazon'

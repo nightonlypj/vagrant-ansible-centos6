@@ -39,7 +39,6 @@
 ### START ###
 /var/log/mysql/*.log {
         create 644 mysql mysql
-        notifempty
         daily
 {% if hosts_env == 'development' %}
         rotate 7

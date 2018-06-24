@@ -1,6 +1,5 @@
 ### START ###
 /var/log/logcompress_postgresql.log {
 	missingok
-	notifempty
 }
 ### END ###

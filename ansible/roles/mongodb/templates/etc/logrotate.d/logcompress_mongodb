@@ -1,6 +1,5 @@
 ### START ###
 /var/log/logcompress_mongodb.log {
 	missingok
-	notifempty
 }
 ### END ###
