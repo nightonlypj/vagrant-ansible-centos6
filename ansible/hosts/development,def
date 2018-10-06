@@ -78,4 +78,5 @@ httpd_enable_letsencrypt=0
 httpd_front_crt_file=/etc/pki/tls/certs/localhost.crt
 httpd_front_key_file=/etc/pki/tls/private/localhost.key
 httpd_front_chain_file=
+httpd_front_fullchain_file={{ httpd_front_crt_file }}
 ### END ###

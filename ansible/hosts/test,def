@@ -87,9 +87,11 @@ httpd_log_host_header=
 #httpd_front_crt_file=/etc/pki/tls/certs/localhost.crt
 #httpd_front_key_file=/etc/pki/tls/private/localhost.key
 #httpd_front_chain_file=
+#httpd_front_fullchain_file={{ httpd_front_crt_file }}
 # Use Let's Encrypt(1=Not overwrite, 2=Force overwrite)
 httpd_enable_letsencrypt=1
 httpd_front_crt_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/cert.pem
 httpd_front_key_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/privkey.pem
 httpd_front_chain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/chain.pem
+httpd_front_fullchain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/fullchain.pem
 ### END ###

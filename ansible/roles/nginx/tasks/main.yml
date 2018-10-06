@@ -64,7 +64,7 @@
     - "/usr/share/nginx/html/nginx-logo.png"
     - "/usr/share/nginx/html/poweredby.png"
 - name: cd /usr/share/nginx/html; cp /vagrant/ansible/roles/nginx/templates/usr/share/nginx/html/* ./; chmod 664 *; chown nginx:wheel *
-  copy: src={{ item }} dest="/usr/share/nginx/html/" mode=664 owner=nginx group=wheel backup=no
+  template: src={{ item }} dest="/usr/share/nginx/html/" mode=664 owner=nginx group=wheel backup=no
   with_fileglob:
     - "templates/usr/share/nginx/html/*"
 
