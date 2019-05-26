@@ -1,0 +1,58 @@
+{% if ansible_distribution == 'Amazon' %}
+# This logname can be set in /etc/my.cnf
+# by setting the variable "log-error"
+# in the [mysqld_safe] section as follows:
+#
+# [mysqld_safe]
+# log-error=/var/log/mysqld.log
+#
+# If the root user has a password you have to create a
+# /root/.my.cnf configuration file with the following
+# content:
+#
+# [mysqladmin]
+# password = <secret> 
+# user= root
+#
+# where "<secret>" is the password. 
+#
+# ATTENTION: This /root/.my.cnf should be readable ONLY
+# for root !
+
+# Then, un-comment the following lines to enable rotation of mysql's log file:
+
+#/var/log/mysqld.log {
+#        create 640 mysql mysql
+#        notifempty
+#        daily
+#        rotate 3
+#        missingok
+#        compress
+#    postrotate
+#	# just if mysqld is really running
+#	if test -x /usr/libexec/mysql56/mysqladmin && \
+#	   /usr/libexec/mysql56/mysqladmin ping &>/dev/null
+#	then
+#	   /usr/libexec/mysql56/mysqladmin flush-logs
+#	fi
+#    endscript
+#}
+### START ###
+/var/log/mysql/*.log {
+        create 0644 mysql mysql
+{% if hosts_env == 'development' %}
+        daily
+        rotate 7
+{% endif %}
+        missingok
+    postrotate
+        # just if mysqld is really running
+        if test -x /usr/libexec/mysql56/mysqladmin && \
+            /usr/libexec/mysql56/mysqladmin ping &>/dev/null
+        then
+            /usr/libexec/mysql56/mysqladmin --defaults-extra-file=/root/.my.cnf flush-logs
+        fi
+    endscript
+}
+### END ###
+{% endif %}

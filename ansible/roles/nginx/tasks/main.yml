@@ -10,8 +10,8 @@
 - when: ansible_distribution == 'Amazon'
   import_tasks: roles/common/tasks/epel.yml
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) yum -y --enablerepo=nginx install nginx-1.12.1
-  yum: name=nginx-1.12.1 state=present enablerepo=nginx
+  name: (CentOS) yum -y --enablerepo=nginx install nginx-1.14.1
+  yum: name=nginx-1.14.1 state=present enablerepo=nginx
 - when: ansible_distribution == 'Amazon'
   name: (Amazon) yum -y --enablerepo=epel install nginx
   yum: name=nginx state=present enablerepo=epel

@@ -1,0 +1,6 @@
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y install http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
+  yum: name=http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm state=present
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) cd /etc/yum.repos.d; cp -a mysql-community.repo mysql-community.repo,def; sed -i -e "s/enabled\s*=\s*1/enabled=0/g" mysql-community.repo
+  replace: dest=/etc/yum.repos.d/mysql-community.repo regexp="enabled\s*=\s*1" replace="enabled=0" backup=yes

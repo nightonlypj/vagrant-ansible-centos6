@@ -2,8 +2,8 @@
 - when: ansible_distribution == 'CentOS'
   import_tasks: roles/common/tasks/remi.yml
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
-  yum: name={{ item }} state=present enablerepo=remi-php72,remi-safe,epel
+  name: (CentOS) yum -y --enablerepo=remi-php71,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
+  yum: name={{ item }} state=present enablerepo=remi-php71,remi-safe,epel
   with_items:
     - php
     - php-devel
@@ -21,11 +21,9 @@
     # Use PostgreSQL
     - php-pgsql
     # Use Redis
-# TODO: (Amazon) Not found php-pecl-redis
-#    - php-pecl-redis
+    - php-pecl-redis
     # Use MongoDB
-# TODO: (Amazon) Not found php-pecl-mongodb
-#    - php-pecl-mongodb
+    - php-pecl-mongodb
   notify: service php-fpm restart
 
 # Tips: conflict httpd24/httpd24-tools with httpd/httpd-tools
@@ -40,57 +38,56 @@
   yum: name=mod24_ssl state=present
 
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) yum -y --enablerepo=epel install php72 php72-devel php72-gd php72-gmp php72-mbstring php72-mcrypt php72-pdo php7-pear php72-xml php72-fpm php72-pecl-imagick php72-mysqlnd php72-pgsql php72-pecl-redis php72-pecl-mongodb
+  name: (Amazon) yum -y --enablerepo=epel install php71 php71-devel php71-gd php71-gmp php71-mbstring php71-mcrypt php71-pdo php7-pear php71-xml php71-fpm php71-pecl-imagick php71-mysqlnd php71-pgsql php71-pecl-redis php71-pecl-mongodb
   yum: name={{ item }} state=present enablerepo=epel
   with_items:
-    - php72
-    - php72-devel
-    - php72-gd
-    - php72-gmp
-    - php72-mbstring
-    - php72-mcrypt
-    - php72-pdo
+    - php71
+    - php71-devel
+    - php71-gd
+    - php71-gmp
+    - php71-mbstring
+    - php71-mcrypt
+    - php71-pdo
     - php7-pear
-    - php72-xml
-    - php72-fpm
+    - php71-xml
+    - php71-fpm
     # Use ImageMagick
-    - php72-pecl-imagick
+    - php71-pecl-imagick
     # Use MySQL
-    - php72-mysqlnd
+    - php71-mysqlnd
     # Use PostgreSQL
-    - php72-pgsql
+    - php71-pgsql
     # Use Redis
-# TODO: (Amazon) Not found php-pecl-redis
-#    - php72-pecl-redis
+    - php71-pecl-redis
     # Use MongoDB
-# TODO: (Amazon) Not found php-pecl-mongodb
-#    - php72-pecl-mongodb
+# TODO: Not found php-pecl-mongodb
+#    - php71-pecl-mongodb
   notify: service php-fpm restart
 
 ### conf ###
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php.ini ./; chmod 644 php.ini; chown root:root php.ini
+  name: (CentOS) cd /etc; cp /vagrant/ansible/roles/php71-nginx/templates/etc/php.ini ./; chmod 644 php.ini; chown root:root php.ini
   template: src="templates/etc/php.ini" dest="/etc/" mode=644 owner=root group=root backup=yes
   notify: service php-fpm restart
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php.ini ./php-7.2.ini; chmod 644 php-7.2.ini; chown root:root php-7.2.ini
-  template: src="templates/etc/php.ini" dest="/etc/php-7.2.ini" mode=644 owner=root group=root backup=yes
+  name: (Amazon) cd /etc; cp /vagrant/ansible/roles/php71-nginx/templates/etc/php.ini ./php-7.1.ini; chmod 644 php-7.1.ini; chown root:root php-7.1.ini
+  template: src="templates/etc/php.ini" dest="/etc/php-7.1.ini" mode=644 owner=root group=root backup=yes
   notify: service php-fpm restart
-- name: cd /etc/php.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php.d/* ./; chmod 644 *; chown root:root *
+- name: cd /etc/php.d; cp /vagrant/ansible/roles/php71-nginx/templates/etc/php.d/* ./; chmod 644 *; chown root:root *
   template: src={{ item }} dest="/etc/php.d/" mode=644 owner=root group=root backup=yes
   with_fileglob:
     - "templates/etc/php.d/*"
   notify: service php-fpm restart
 
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php-fpm.conf ./; chmod 644 php-fpm.conf; chown root:root php-fpm.conf
+  name: (CentOS) cd /etc; cp /vagrant/ansible/roles/php71-nginx/templates/etc/php-fpm.conf ./; chmod 644 php-fpm.conf; chown root:root php-fpm.conf
   template: src="templates/etc/php-fpm.conf" dest="/etc/" mode=644 owner=root group=root backup=yes
   notify: service php-fpm restart
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) cd /etc; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php-fpm-7.2.conf ./; chmod 644 php-fpm-7.2.conf; chown root:root php-fpm-7.2.conf
-  template: src="templates/etc/php-fpm.conf" dest="/etc/php-fpm-7.2.conf" mode=644 owner=root group=root backup=yes
+  name: (Amazon) cd /etc; cp /vagrant/ansible/roles/php71-nginx/templates/etc/php-fpm-7.1.conf ./; chmod 644 php-fpm-7.1.conf; chown root:root php-fpm-7.1.conf
+  template: src="templates/etc/php-fpm.conf" dest="/etc/php-fpm-7.1.conf" mode=644 owner=root group=root backup=yes
   notify: service php-fpm restart
-- name: cd /etc/php-fpm.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/php-fpm.d/* ./; chmod 644 *; chown root:root *
+- name: cd /etc/php-fpm.d; cp /vagrant/ansible/roles/php71-nginx/templates/etc/php-fpm.d/* ./; chmod 644 *; chown root:root *
   template: src={{ item }} dest="/etc/php-fpm.d/" mode=644 owner=root group=root backup=yes
   with_fileglob:
     - "templates/etc/php-fpm.d/*"
@@ -109,11 +106,11 @@
   file: path="/var/log/php-fpm/error.log" state=touch mode=644 owner=root group=root
 
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) cd /etc/logrotate.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/logrotate.d/php-fpm ./; chmod 644 php-fpm; chown root:root php-fpm
+  name: (CentOS) cd /etc/logrotate.d; cp /vagrant/ansible/roles/php71-nginx/templates/etc/logrotate.d/php-fpm ./; chmod 644 php-fpm; chown root:root php-fpm
   template: src="templates/etc/logrotate.d/php-fpm" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) cd /etc/logrotate.d; cp /vagrant/ansible/roles/php72-nginx/templates/etc/logrotate.d/php-fpm php-fpm-7.2; chmod 644 php-fpm-7.2; chown root:root php-fpm-7.2
-  template: src="templates/etc/logrotate.d/php-fpm" dest="/etc/logrotate.d/php-fpm-7.2" mode=644 owner=root group=root backup=no
+  name: (Amazon) cd /etc/logrotate.d; cp /vagrant/ansible/roles/php71-nginx/templates/etc/logrotate.d/php-fpm php-fpm-7.1; chmod 644 php-fpm-7.1; chown root:root php-fpm-7.1
+  template: src="templates/etc/logrotate.d/php-fpm" dest="/etc/logrotate.d/php-fpm-7.1" mode=644 owner=root group=root backup=no
 
 ### check/start ###
 - name: php-fpm -t

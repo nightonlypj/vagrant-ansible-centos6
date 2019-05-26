@@ -1,0 +1,87 @@
+#!/bin/sh
+
+BATCH_NAME='backup_mysql'
+LOG_FILE="/var/log/$BATCH_NAME.log"
+TARGET_PATH='/var/backup/mysqldump'
+EXT_NAME='.sql'
+TARGET_NAME="*_*${EXT_NAME}*"
+{% if hosts_env == 'development' or hosts_env == 'test' %}
+RM_MTIME=2
+{% else %}
+RM_MTIME=7
+{% endif %}
+ATTR_CODE=660
+GROUP_NAME='wheel'
+
+error_msg=''
+write_log () {
+	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
+	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
+}
+
+send_error_mail () {
+	[ -z "$error_msg" ] && return
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
+	write_log 'INFO' 'Send error mail'
+}
+
+delete_target_files() {
+	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "$TARGET_NAME" -daystart -mtime +$RM_MTIME -type f`
+	for file in $files; do
+		fuser $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 1 ]; then
+			write_log 'INFO' "Skip $file"
+			continue
+		fi
+
+		ionice -c 2 -n 7 nice -n 19 rm $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' "Delete $file"
+			continue
+		fi
+		write_log 'INFO' "Delete $file"
+	done
+}
+
+dump_compress_files() {
+	databases=`echo "SHOW DATABASES;" | mysql --defaults-extra-file=/root/.my.cnf -N 2>> $LOG_FILE`
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' 'Connect'
+		return
+	fi
+	write_log 'INFO' 'Connect'
+
+	for database in $databases; do
+		file="$TARGET_PATH/${database}_`date "+%Y%m%d"`$EXT_NAME"
+		# Tips: -- Warning: Skipping the data of table mysql.event. Specify the --events option explicitly.
+		if [ "$database" = 'mysql' ]; then
+			ionice -c 2 -n 7 nice -n 19 mysqldump --defaults-extra-file=/root/.my.cnf -q --single-transaction --events $database > $file 2>> $LOG_FILE
+		else
+			ionice -c 2 -n 7 nice -n 19 mysqldump --defaults-extra-file=/root/.my.cnf -q --single-transaction $database > $file 2>> $LOG_FILE
+		fi
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' "Dump $file"
+			continue
+		fi
+		write_log 'INFO' "Dump $file"
+
+		ionice -c 2 -n 7 nice -n 19 gzip -f $file > /dev/null 2>> $LOG_FILE
+		if [ $? -ne 0 ]; then
+			write_log 'ERROR' "Compress $file -> .gz"
+			continue
+		fi
+		write_log 'INFO' "Compress $file -> .gz"
+
+		chmod $ATTR_CODE $file.gz > /dev/null 2>> $LOG_FILE
+		[ $? -ne 0 ] && write_log 'ERROR' "Chmod $file.gz"
+
+		chgrp $GROUP_NAME $file.gz > /dev/null 2>> $LOG_FILE
+		[ $? -ne 0 ] && write_log 'ERROR' "Chgrp $file.gz"
+	done
+}
+
+write_log 'INFO' '=== START ==='
+delete_target_files
+dump_compress_files
+send_error_mail
+write_log 'INFO' '=== END ==='

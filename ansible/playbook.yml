@@ -22,6 +22,9 @@
     # Use MySQL
     - role: mysql
       tags: mysql
+    # Use MySQL 5.6
+#    - role: mysql56
+#      tags: mysql56
     # Use MySQL 5.7
 #    - role: mysql57
 #      tags: mysql57
@@ -66,6 +69,10 @@
     # Use PHP for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-nginx/tasks/main.yml]
 #    - role: php-nginx
 #      tags: php-nginx
+    # Use PHP 7.1 for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php71-nginx/tasks/main.yml]
+    # TODO: (Amazon) Not found php-pecl-mongodb
+#    - role: php71-nginx
+#      tags: php71-nginx
     # Use PHP 7.2 for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php72-nginx/tasks/main.yml]
     # TODO: (Amazon) Not found php-pecl-redis, php-pecl-mongodb
 #    - role: php72-nginx

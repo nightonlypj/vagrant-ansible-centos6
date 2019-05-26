@@ -33,6 +33,7 @@ ansible
         postfix         ：Postfix(localhost only)の設定
         sshd            ；sshdの設定
         mysql           ：MySQLの設定
+        mysql56         ：MySQL 5.6の設定
         mysql57         ：MySQL 5.7の設定
         postgresql      ：PostgreSQLの設定
         postgresql96    ：PostgreSQL 9.6の設定
@@ -45,6 +46,7 @@ ansible
         php-httpd       ：PHP for Apacheの設定
         nginx           ：Nginxの設定　※Load Balancer対応
         php-nginx       ：PHP for Nginxの設定(PHP-FPM)
+        php71-nginx     ：PHP 7.1 for Nginxの設定(PHP-FPM)
         php72-nginx     ：PHP 7.2 for Nginxの設定(PHP-FPM)
     ansible.cfg     ：Ansibleの設定ファイル
     playbook.yml    ：どの設定ルールを使うかを制御する設定　※使用しないルールはコメントアウトしてください

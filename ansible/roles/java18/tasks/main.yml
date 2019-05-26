@@ -4,3 +4,6 @@
   with_items:
     - java-1.8.0-openjdk
     - java-1.8.0-openjdk-devel
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
+  shell: alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java

@@ -1,0 +1,124 @@
+### yum ###
+- import_tasks: repos.yml
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) yum -y --enablerepo=mysql56-community install mysql-community-client mysql-community-server mysql-community-devel MySQL-python
+  yum: name={{ item }} state=present enablerepo=mysql56-community
+  with_items:
+    - mysql-community-client
+    - mysql-community-server
+    - mysql-community-devel
+    - MySQL-python
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) yum -y install mysql56 mysql56-server mysql56-devel MySQL-python27
+  yum: name={{ item }} state=present
+  with_items:
+    - mysql56
+    - mysql56-server
+    - mysql56-devel
+    - MySQL-python27
+
+### conf ###
+- name: cd /etc; cp /vagrant/ansible/roles/mysql56/templates/etc/my.cnf ./; chmod 644 my.cnf; chown root:root my.cnf
+  template: src="templates/etc/my.cnf" dest="/etc/" mode=644 owner=root group=root backup=yes
+  notify: service mysqld restart
+
+### log ###
+- name: cd /var/log; mkdir -p mysql; chmod 750 mysql; chown mysql:wheel mysql
+  file: path="/var/log/mysql" state=directory mode=750 owner=mysql group=wheel
+- name: cd /var/log/mysql; touch {error,slow_query}.log; chmod 644 {error,slow_query}.log; chown mysql:mysql {error,slow_query}.log
+  file: path={{ item }} state=touch mode=644 owner=mysql group=mysql
+  with_items:
+    - "/var/log/mysql/error.log"
+    - "/var/log/mysql/slow_query.log"
+- when: hosts_env == 'development'
+  name: (development) cd /var/log/mysql; touch general.log; chmod 644 general.log; chown mysql:mysql general.log
+  file: path="/var/log/mysql/general.log" state=touch mode=644 owner=mysql group=mysql
+
+- when: ansible_distribution == 'CentOS'
+  name: (CentOS) cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql56/templates/etc/logrotate.d/mysql ./; chmod 644 mysql; chown root:root mysql
+  template: src="templates/etc/logrotate.d/mysql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+- when: ansible_distribution == 'Amazon'
+  name: (Amazon) cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql56/templates/etc/logrotate.d/mysqld ./; chmod 644 mysqld; chown root:root mysqld
+  template: src="templates/etc/logrotate.d/mysqld" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### backup ###
+- name: mkdir -p /var/backup/mysqldump; chmod 750 /var/backup/{.,mysqldump}; chown root:wheel /var/backup/{.,mysqldump}
+  file: path={{ item }} state=directory mode=750 owner=root group=wheel
+  with_items:
+    - "/var/backup"
+    - "/var/backup/mysqldump"
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/mysql56/templates/etc/cron.daily/backup_mysql.cron ./; chmod 740 backup_mysql.cron; chown root:wheel backup_mysql.cron
+  template: src="templates/etc/cron.daily/backup_mysql.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mysql56/templates/etc/logrotate.d/backup_mysql ./; chmod 644 backup_mysql; chown root:root backup_mysql
+  template: src="templates/etc/logrotate.d/backup_mysql" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### start ###
+- name: service mysqld start; chkconfig mysqld on
+  service: name=mysqld state=started enabled=yes
+
+### root password ###
+- name: test ! -e /root/.my.cnf
+  stat: path=/root/.my.cnf
+  register: f
+- when: not f.stat.exists
+  name: (first) mysql> UPDATE user SET password=PASSWORD('{{ mysql_root_password }}') WHERE User = 'root' AND Host = 'localhost';
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    login_user: ''
+    login_password: ''
+- when: not f.stat.exists
+  name: (first) mysql> UPDATE user SET password=PASSWORD('{{ mysql_root_password }}') WHERE User = 'root';
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+  with_items:
+    - "{{ ansible_fqdn }}"
+    - 127.0.0.1
+    - ::1
+- when: not f.stat.exists
+  name: (first) cd /root; cp /vagrant/ansible/roles/mysql56/templates/root/.my.cnf ./; chmod 600 .my.cnf; chown root:root .my.cnf
+  template: src="templates/root/.my.cnf" dest="/root/" mode=600 owner=root group=root backup=yes
+
+### delete anonymous/fqdn ###
+- name: mysql> DELETE FROM user WHERE User = '';
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+- name: mysql> DELETE FROM user WHERE User = 'root' AND Host = '{{ ansible_fqdn }}';
+  mysql_user:
+    name: 'root'
+    host: "{{ ansible_fqdn }}"
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+
+### drop test ###
+- name: mysql> DROP DATABASE test;
+  mysql_db:
+    name: 'test'
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+
+### create database/user ###
+- name: mysql> CREATE DATABASE {{ mysql_dbname }};
+  mysql_db:
+    name: "{{ mysql_dbname }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+- name: mysql> CREATE USER '{{ mysql_username }}'@'%' IDENTIFIED BY '{{ mysql_password }}'; GRANT ALL PRIVILEGES ON {{ mysql_dbname }}.* TO '{{ mysql_username }}'@'%';
+  mysql_user:
+    name: "{{ mysql_username }}"
+    host: "%"
+    password: "{{ mysql_password }}"
+    priv: "{{ mysql_dbname }}.*:ALL"
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
