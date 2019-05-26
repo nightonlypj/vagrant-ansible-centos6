@@ -1,6 +1,7 @@
 # CentOS6 Vagrantfile＋Ansible playbook提供
 
-Amazon Linux(EC2/Lightsail)対応
+Amazon Linux(EC2/Lightsail)対応  
+※Amazon Linux 2(EC2)を使用する場合は、[CentOS7 Vagrantfile＋Ansible playbook提供](https://gitlab.com/nightonlypj/vagrant-ansible-centos7)を使用してください。
 
 ## 前提条件
 
@@ -140,7 +141,7 @@ $ su -
 ```
 ```
 # su - ansible
-$ ssh-keygen -t rsa
+$ ssh-keygen -t rsa -b 4096
 Enter file in which to save the key (/home/ansible/.ssh/id_rsa): (空のままEnter)
 Enter passphrase (empty for no passphrase): (空のままEnter)
 Enter same passphrase again: (空のままEnter)

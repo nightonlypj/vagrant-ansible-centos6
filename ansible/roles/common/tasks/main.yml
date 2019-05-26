@@ -5,13 +5,14 @@
 - name: yum -y groupinstall "Base"
   yum: name="@Base" state=present
 
-- name: yum -y install ftp logwatch nc screen telnet
+- name: yum -y install ftp logwatch nc screen sysstat telnet
   yum: name={{ item }} state=present
   with_items:
     - ftp
     - logwatch
     - nc
     - screen
+    - sysstat
     - telnet
 
 - import_tasks: roles/common/tasks/epel.yml
@@ -23,43 +24,52 @@
   yum: name=http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm state=present
 
 ### service ###
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service abrt-ccpp stop; chkconfig abrt-ccpp off
+- name: service abrt-ccpp stop; chkconfig abrt-ccpp off
   service: name=abrt-ccpp state=stopped enabled=no
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service abrt-oops stop; chkconfig abrt-oops off
+  ignore_errors: yes
+- name: service abrt-oops stop; chkconfig abrt-oops off
   service: name=abrt-oops state=stopped enabled=no
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service abrtd stop; chkconfig abrtd off
+  ignore_errors: yes
+- name: service abrtd stop; chkconfig abrtd off
   service: name=abrtd state=stopped enabled=no
+  ignore_errors: yes
 - name: service acpid stop; chkconfig acpid off
   service: name=acpid state=stopped enabled=no
+  ignore_errors: yes
 - name: service atd stop; chkconfig atd off
   service: name=atd state=stopped enabled=no
+  ignore_errors: yes
 - name: service auditd stop; chkconfig auditd off
   service: name=auditd state=stopped enabled=no
+  ignore_errors: yes
 - name: service blk-availability stop; chkconfig blk-availability off
   service: name=blk-availability state=stopped enabled=no
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service cpuspeed stop; chkconfig cpuspeed off
+  ignore_errors: yes
+- name: service cpuspeed stop; chkconfig cpuspeed off
   service: name=cpuspeed state=stopped enabled=no
+  ignore_errors: yes
 - name: service lvm2-monitor stop; chkconfig lvm2-monitor off
   service: name=lvm2-monitor state=stopped enabled=no
+  ignore_errors: yes
 - name: service mdmonitor stop; chkconfig mdmonitor off
   service: name=mdmonitor state=stopped enabled=no
+  ignore_errors: yes
 - name: service netfs stop; chkconfig netfs off
   service: name=netfs state=stopped enabled=no
+  ignore_errors: yes
 - name: service ntpdate stop; chkconfig ntpdate off
   service: name=ntpdate state=stopped enabled=no
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service restorecond stop; chkconfig restorecond off
+  ignore_errors: yes
+- name: service restorecond stop; chkconfig restorecond off
   service: name=restorecond enabled=no
   # Tips: state=stopped -> failed determining service state, possible typo of service name?
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service smartd stop; chkconfig smartd off
+  ignore_errors: yes
+- name: service smartd stop; chkconfig smartd off
   service: name=smartd state=stopped enabled=no
+  ignore_errors: yes
 - name: service udev-post stop; chkconfig udev-post off
   service: name=udev-post state=stopped enabled=no
+  ignore_errors: yes
 
 - name: service crond start; chkconfig crond on
   service: name=crond state=started enabled=yes
@@ -71,11 +81,7 @@
   service: name=psacct state=started enabled=yes
 - name: service rsyslog start; chkconfig rsyslog on
   service: name=rsyslog state=started enabled=yes
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service haldaemon start; chkconfig haldaemon on
-  service: name=haldaemon state=started enabled=yes
-- when: ansible_distribution == 'CentOS'
-  name: (CentOS) service sysstat start; chkconfig sysstat on
+- name: service sysstat start; chkconfig sysstat on
   service: name=sysstat state=started enabled=yes
 
 ### conf ###

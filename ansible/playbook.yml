@@ -67,5 +67,6 @@
 #    - role: php-nginx
 #      tags: php-nginx
     # Use PHP 7.2 for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php72-nginx/tasks/main.yml]
+    # TODO: (Amazon) Not found php-pecl-redis, php-pecl-mongodb
 #    - role: php72-nginx
 #      tags: php72-nginx

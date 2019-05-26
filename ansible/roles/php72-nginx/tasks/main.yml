@@ -2,7 +2,7 @@
 - when: ansible_distribution == 'CentOS'
   import_tasks: roles/common/tasks/remi.yml
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pecl-mcrypt php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
+  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
   yum: name={{ item }} state=present enablerepo=remi-php72,remi-safe,epel
   with_items:
     - php
@@ -10,7 +10,6 @@
     - php-gd
     - php-gmp
     - php-mbstring
-    - php-pecl-mcrypt
     - php-pdo
     - php-pear
     - php-xml
@@ -59,10 +58,10 @@
     # Use PostgreSQL
     - php72-pgsql
     # Use Redis
-# TODO: Not found php72-redis
+# TODO: Not found php-pecl-redis
 #    - php72-pecl-redis
     # Use MongoDB
-# TODO: Not found php-mongodb
+# TODO: Not found php-pecl-mongodb
 #    - php72-pecl-mongodb
   notify: service php-fpm restart
 
