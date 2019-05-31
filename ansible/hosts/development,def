@@ -70,8 +70,10 @@ httpd_enable_ip_limit=0
 # No use
 httpd_ssl_is_80port=0
 httpd_ssl_check_header=
+nginx_ssl_check_header=
 httpd_ssl_check_value=
 httpd_log_host_header=
+nginx_log_real_ip_from=
 ### SSL Certificate ###
 # Use default
 httpd_enable_letsencrypt=0

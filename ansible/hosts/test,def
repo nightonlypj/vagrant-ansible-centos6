@@ -74,13 +74,17 @@ httpd_enable_ip_limit=1
 # No use
 httpd_ssl_is_80port=0
 httpd_ssl_check_header=
+nginx_ssl_check_header=
 httpd_ssl_check_value=
 httpd_log_host_header=
+nginx_log_real_ip_from=
 # Use ELB
 #httpd_ssl_is_80port=1
-#httpd_ssl_check_header=X-Forwarded-Port
-#httpd_ssl_check_value=443
+#httpd_ssl_check_header=X-Forwarded-Proto
+#nginx_ssl_check_header=x_forwarded_proto
+#httpd_ssl_check_value=https
 #httpd_log_host_header=X-Forwarded-For
+#nginx_log_real_ip_from=172.31.0.0/16
 ### SSL Certificate ###
 # Use default
 #httpd_enable_letsencrypt=0
