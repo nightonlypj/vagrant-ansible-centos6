@@ -89,6 +89,7 @@ tomcat_enable_manager=0
 tomcat_user_name=
 tomcat_user_password=
 ### Apache/Nginx ###
+nginx_enable_php=1
 httpd_front_servername=staging.mydomain
 # No use IP limit
 httpd_enable_ip_limit=0

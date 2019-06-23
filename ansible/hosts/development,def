@@ -63,6 +63,7 @@ tomcat_enable_manager=1
 tomcat_user_name=admin
 tomcat_user_password=xyz789
 ### Apache/Nginx ###
+nginx_enable_php=1
 httpd_front_servername=dev-centos6.local
 # No use IP limit
 httpd_enable_ip_limit=0

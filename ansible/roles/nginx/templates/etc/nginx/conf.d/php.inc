@@ -1,3 +1,4 @@
+{% if nginx_enable_php != 0 %}
 ### START ###
 index index.html index.htm index.php;
 location ~ [^/]\.php(/|$) {
@@ -13,3 +14,4 @@ location ~ [^/]\.php(/|$) {
     fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
 }
 ### END ###
+{% endif %}
