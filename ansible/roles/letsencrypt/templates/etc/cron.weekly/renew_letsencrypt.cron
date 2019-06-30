@@ -5,7 +5,7 @@ LOG_FILE="/var/log/$BATCH_NAME.log"
 
 error_msg=''
 write_log () {
-	echo "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
+	echo -e "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
 	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
 }
 
