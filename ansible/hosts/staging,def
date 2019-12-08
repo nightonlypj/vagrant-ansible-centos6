@@ -44,30 +44,36 @@ ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.
 [db-servers:vars]
 hosts_allow_httpd=
 hosts_allow_mysqld=127.0.0.1, x.x.x.x, [::1]
-hosts_allow_postgresql=127.0.0.1, x.x.x.x, [::1]
+#hosts_allow_postgresql=127.0.0.1, x.x.x.x, [::1]
+hosts_allow_postgresql=
 iptables_enable_http_public=0
 ip6tables_enable_http_public=0
 iptables_tomcat_internal_addresses=
 ip6tables_tomcat_internal_addresses=
 iptables_mysqld_internal_addresses='["x.x.x.x"]'
 ip6tables_mysqld_internal_addresses=
-iptables_postgresql_internal_addresses='["x.x.x.x"]'
+#iptables_postgresql_internal_addresses='["x.x.x.x"]'
+iptables_postgresql_internal_addresses=
 ip6tables_postgresql_internal_addresses=
-iptables_redis_internal_addresses='["x.x.x.x"]'
+#iptables_redis_internal_addresses='["x.x.x.x"]'
+iptables_redis_internal_addresses=
 ip6tables_redis_internal_addresses=
-iptables_mongodb_internal_addresses='["x.x.x.x"]'
+#iptables_mongodb_internal_addresses='["x.x.x.x"]'
+iptables_mongodb_internal_addresses=
 ip6tables_mongodb_internal_addresses=
 ### MySQL ###
 mysql_root_password=changepasswd
-mysql_dbname=mytest
-mysql_username=myuser
+#mysql_dbname=mytest
+mysql_dbname=wordpress
+#mysql_username=myuser
+mysql_username=wordpress
 mysql_password=changepasswd
-mysql_validate_password_policy=LOW
-mysql_validate_password_length=6
+#mysql_validate_password_policy=LOW
+#mysql_validate_password_length=6
 ### PostgreSQL ###
-postgresql_dbname=pgtest
-postgresql_username=pguser
-postgresql_password=changepasswd
+#postgresql_dbname=pgtest
+#postgresql_username=pguser
+#postgresql_password=changepasswd
 ### END ###
 
 [web-servers:vars]
@@ -85,9 +91,9 @@ ip6tables_redis_internal_addresses=
 iptables_mongodb_internal_addresses=
 ip6tables_mongodb_internal_addresses=
 ### Tomcat ###
-tomcat_enable_manager=0
-tomcat_user_name=
-tomcat_user_password=
+#tomcat_enable_manager=0
+#tomcat_user_name=
+#tomcat_user_password=
 ### Apache/Nginx ###
 nginx_enable_php=1
 httpd_front_servername=staging.mydomain

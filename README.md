@@ -33,21 +33,21 @@ ansible
         postfix         ：Postfix(localhost only)の設定
         sshd            ；sshdの設定
         mysql           ：MySQLの設定
-        mysql56         ：MySQL 5.6の設定
-        mysql57         ：MySQL 5.7の設定
-        postgresql      ：PostgreSQLの設定
-        postgresql96    ：PostgreSQL 9.6の設定
-        redis           ：Redisの設定
+（未使用）mysql56         ：MySQL 5.6の設定
+（未使用）mysql57         ：MySQL 5.7の設定
+（未使用）postgresql      ：PostgreSQLの設定
+（未使用）postgresql96    ：PostgreSQL 9.6の設定
+（未使用）redis           ：Redisの設定
         imagick         ：ImageMagickの設定
-        java18          ：Java 1.8の設定
-        tomcat          ：Tomcatの設定
+（未使用）java18          ：Java 1.8の設定
+（未使用）tomcat          ：Tomcatの設定
         letsencrypt     ：Let's Encryptの設定　※自動更新対応
-        httpd           ：Apacheの設定　※Load Balancer対応
-        php-httpd       ：PHP for Apacheの設定
+（未使用）httpd           ：Apacheの設定　※Load Balancer対応
+（未使用）php-httpd       ：PHP for Apacheの設定
         nginx           ：Nginxの設定　※Load Balancer対応
         php-nginx       ：PHP for Nginxの設定(PHP-FPM)
-        php71-nginx     ：PHP 7.1 for Nginxの設定(PHP-FPM)
-        php72-nginx     ：PHP 7.2 for Nginxの設定(PHP-FPM)
+（未使用）php71-nginx     ：PHP 7.1 for Nginxの設定(PHP-FPM)
+（未使用）php72-nginx     ：PHP 7.2 for Nginxの設定(PHP-FPM)
     ansible.cfg     ：Ansibleの設定ファイル
     playbook.yml    ：どの設定ルールを使うかを制御する設定　※使用しないルールはコメントアウトしてください
 README.md       ：説明や使い方（このファイル）

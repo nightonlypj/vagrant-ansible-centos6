@@ -29,17 +29,17 @@
 #    - role: mysql57
 #      tags: mysql57
     # Use PostgreSQL
-    - role: postgresql
-      tags: postgresql
+#    - role: postgresql
+#      tags: postgresql
     # Use PostgreSQL 9.6
 #    - role: postgresql96
 #      tags: postgresql96
     # Use Redis
-    - role: redis
-      tags: redis
+#    - role: redis
+#      tags: redis
     # Use MongoDB
-    - role: mongodb
-      tags: mongodb
+#    - role: mongodb
+#      tags: mongodb
 
 - hosts: web-servers
   max_fail_percentage: 0
@@ -49,26 +49,26 @@
     - role: imagick
       tags: imagick
     # Use Java 1.8
-    - role: java18
-      tags: java18
+#    - role: java18
+#      tags: java18
     # Use Tomcat
-    - role: tomcat
-      tags: tomcat
+#    - role: tomcat
+#      tags: tomcat
     # Use Let's Encrypt
     - role: letsencrypt
       tags: letsencrypt
     # Use Apache  *** Tips: Please change or add [DocumentRoot,Allow from] from [roles/httpd/templates/etc/httpd/conf.d/z_front.conf,allow-ip.inc]
-    - role: httpd
-      tags: httpd
+#    - role: httpd
+#      tags: httpd
     # Use PHP for Apache  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-httpd/tasks/main.yml]
-    - role: php-httpd
-      tags: php-httpd
+#    - role: php-httpd
+#      tags: php-httpd
     # Use Nginx
-#    - role: nginx
-#      tags: nginx
+    - role: nginx
+      tags: nginx
     # Use PHP for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php-nginx/tasks/main.yml]
-#    - role: php-nginx
-#      tags: php-nginx
+    - role: php-nginx
+      tags: php-nginx
     # Use PHP 7.1 for Nginx  *** Tips: It is better to delete unnecessary [ImageMagick,MySQL,PostgreSQL,Redis,MongoDB] from [roles/php71-nginx/tasks/main.yml]
     # TODO: (Amazon) Not found php-pecl-mongodb
 #    - role: php71-nginx

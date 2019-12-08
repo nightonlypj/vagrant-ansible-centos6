@@ -14,18 +14,23 @@ hosts_env=test
 hosts_allow_sshd=x.x.x.x
 hosts_allow_httpd=ALL
 hosts_allow_mysqld=127.0.0.1, {{ hosts_allow_sshd }}, [::1]
-hosts_allow_postgresql=127.0.0.1, {{ hosts_allow_sshd }}, [::1]
+#hosts_allow_postgresql=127.0.0.1, {{ hosts_allow_sshd }}, [::1]
+hosts_allow_postgresql=
 iptables_enable_http_public=1
 ip6tables_enable_http_public=1
-iptables_tomcat_internal_addresses='["x.x.x.x"]'
+#iptables_tomcat_internal_addresses='["x.x.x.x"]'
+iptables_tomcat_internal_addresses=
 ip6tables_tomcat_internal_addresses=
 iptables_mysqld_internal_addresses='["x.x.x.x"]'
 ip6tables_mysqld_internal_addresses=
-iptables_postgresql_internal_addresses='["x.x.x.x"]'
+#iptables_postgresql_internal_addresses='["x.x.x.x"]'
+iptables_postgresql_internal_addresses=
 ip6tables_postgresql_internal_addresses=
-iptables_redis_internal_addresses='["x.x.x.x"]'
+#iptables_redis_internal_addresses='["x.x.x.x"]'
+iptables_redis_internal_addresses=
 ip6tables_redis_internal_addresses=
-iptables_mongodb_internal_addresses='["x.x.x.x"]'
+#iptables_mongodb_internal_addresses='["x.x.x.x"]'
+iptables_mongodb_internal_addresses=
 ip6tables_mongodb_internal_addresses=
 ### system ###
 localtime=Japan
@@ -48,22 +53,24 @@ ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.
 [db-servers:vars]
 ### MySQL ###
 mysql_root_password=changepasswd
-mysql_dbname=mytest
-mysql_username=myuser
+#mysql_dbname=mytest
+mysql_dbname=wordpress
+#mysql_username=myuser
+mysql_username=wordpress
 mysql_password=changepasswd
-mysql_validate_password_policy=LOW
-mysql_validate_password_length=6
+#mysql_validate_password_policy=LOW
+#mysql_validate_password_length=6
 ### PostgreSQL ###
-postgresql_dbname=pgtest
-postgresql_username=pguser
-postgresql_password=changepasswd
+#postgresql_dbname=pgtest
+#postgresql_username=pguser
+#postgresql_password=changepasswd
 ### END ###
 
 [web-servers:vars]
 ### Tomcat ###
-tomcat_enable_manager=1
-tomcat_user_name=admin
-tomcat_user_password=changepasswd
+#tomcat_enable_manager=1
+#tomcat_user_name=admin
+#tomcat_user_password=changepasswd
 ### Apache/Nginx ###
 nginx_enable_php=1
 httpd_front_servername=test.mydomain
