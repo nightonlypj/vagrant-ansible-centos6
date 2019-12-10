@@ -67,6 +67,7 @@ tomcat_user_password=changepasswd
 ### Apache/Nginx ###
 nginx_enable_php=1
 httpd_front_servername=test.mydomain
+httpd_front_www_servername=www.{{ httpd_front_servername }}
 # No use IP limit
 #httpd_enable_ip_limit=0
 # Use IP limit
@@ -93,10 +94,18 @@ nginx_log_real_ip_from=
 #httpd_front_key_file=/etc/pki/tls/private/localhost.key
 #httpd_front_chain_file=
 #httpd_front_fullchain_file={{ httpd_front_crt_file }}
+#httpd_front_www_crt_file={{ httpd_front_crt_file }}
+#httpd_front_www_key_file={{ httpd_front_key_file }}
+#httpd_front_www_chain_file={{ httpd_front_chain_file }}
+#httpd_front_www_fullchain_file={{ httpd_front_fullchain_file }}
 # Use Let's Encrypt(1=Not overwrite, 2=Force overwrite)
 httpd_enable_letsencrypt=1
 httpd_front_crt_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/cert.pem
 httpd_front_key_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/privkey.pem
 httpd_front_chain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/chain.pem
 httpd_front_fullchain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/fullchain.pem
+httpd_front_www_crt_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/cert.pem
+httpd_front_www_key_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/privkey.pem
+httpd_front_www_chain_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/chain.pem
+httpd_front_www_fullchain_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/fullchain.pem
 ### END ###

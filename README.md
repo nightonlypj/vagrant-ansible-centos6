@@ -1,7 +1,7 @@
 # CentOS6 Vagrantfile＋Ansible playbook提供
 
 Amazon Linux(EC2/Lightsail)対応  
-※Amazon Linux 2(EC2)を使用する場合は、[CentOS7 Vagrantfile＋Ansible playbook提供](https://gitlab.com/nightonlypj/vagrant-ansible-centos7)を使用してください。
+※Amazon Linux 2(EC2)を使用する場合は、[CentOS7 Vagrantfile＋Ansible playbook提供](https://dev.azure.com/nightonly/vagrant-ansible-origin/_git/vagrant-ansible-centos7)を使用してください。
 
 ## 前提条件
 
@@ -105,10 +105,12 @@ DNSで設定したホスト名を指定
 
 ## development使用方法(例)
 
+[CentOS6 Vagrant Box提供(VirtualBox向け)](https://dev.azure.com/nightonly/vagrant-ansible-origin/_git/vagrant-box-centos6)から最新のBoxをダウンロードしてください。
+
 Windowsコマンドプロンプト/Mac・Linuxターミナル  
-※最新のBoxのURLは、[CentOS6 Vagrant Box提供(VirtualBox向け)](https://gitlab.com/nightonlypj/vagrant-box-centos6)を参照してください。  
+※下記の`~/Downloads/CentOS6.9.box`はダウンロードしたBoxのパスを指定してください。  
 ```
-$ vagrant box add CentOS6 https://gitlab.com/nightonlypj/vagrant-box-centos6/raw/master/CentOS6.9.box
+$ vagrant box add CentOS6 ~/Downloads/CentOS6.9.box
 $ vagrant plugin install vagrant-vbguest
 $ vagrant up
 $ vagrant vbguest
