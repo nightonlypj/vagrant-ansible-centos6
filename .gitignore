@@ -9,3 +9,6 @@ Thumbs.db
 /ansible/*.retry
 /log/
 /Vagrantfile
+/src/wordpress-*.zip
+/src/wordpress-*.tar.gz
+/src/wordpress/

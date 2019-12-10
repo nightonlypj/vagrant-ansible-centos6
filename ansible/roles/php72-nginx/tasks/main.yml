@@ -2,7 +2,8 @@
 - when: ansible_distribution == 'CentOS'
   import_tasks: roles/common/tasks/remi.yml
 - when: ansible_distribution == 'CentOS'
-  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
+#  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd php-pgsql php-pecl-redis php-pecl-mongodb
+  name: (CentOS) yum -y --enablerepo=remi-php72,remi-safe,epel install php php-devel php-gd php-gmp php-mbstring php-pdo php-pear php-xml php-fpm php-pecl-imagick php-mysqlnd
   yum: name={{ item }} state=present enablerepo=remi-php72,remi-safe,epel
   with_items:
     - php
@@ -19,7 +20,7 @@
     # Use MySQL
     - php-mysqlnd
     # Use PostgreSQL
-    - php-pgsql
+#    - php-pgsql
     # Use Redis
 # TODO: (Amazon) Not found php-pecl-redis
 #    - php-pecl-redis
@@ -40,7 +41,8 @@
   yum: name=mod24_ssl state=present
 
 - when: ansible_distribution == 'Amazon'
-  name: (Amazon) yum -y --enablerepo=epel install php72 php72-devel php72-gd php72-gmp php72-mbstring php72-mcrypt php72-pdo php7-pear php72-xml php72-fpm php72-pecl-imagick php72-mysqlnd php72-pgsql php72-pecl-redis php72-pecl-mongodb
+#  name: (Amazon) yum -y --enablerepo=epel install php72 php72-devel php72-gd php72-gmp php72-mbstring php72-mcrypt php72-pdo php7-pear php72-xml php72-fpm php72-pecl-imagick php72-mysqlnd php72-pgsql php72-pecl-redis php72-pecl-mongodb
+  name: (Amazon) yum -y --enablerepo=epel install php72 php72-devel php72-gd php72-gmp php72-mbstring php72-mcrypt php72-pdo php7-pear php72-xml php72-fpm php72-pecl-imagick php72-mysqlnd
   yum: name={{ item }} state=present enablerepo=epel
   with_items:
     - php72
@@ -58,7 +60,7 @@
     # Use MySQL
     - php72-mysqlnd
     # Use PostgreSQL
-    - php72-pgsql
+#    - php72-pgsql
     # Use Redis
 # TODO: (Amazon) Not found php-pecl-redis
 #    - php72-pecl-redis

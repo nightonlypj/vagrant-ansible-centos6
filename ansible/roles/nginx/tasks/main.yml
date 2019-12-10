@@ -74,6 +74,20 @@
 - name: ln -s /usr/share/nginx/html /home/nginx/html
   file: src="/usr/share/nginx/html" dest="/home/nginx/html" state=link
 
+### WordPress ###
+- when: hosts_env == 'development'
+  name: (development) ln -s /vagrant/src/wordpress /usr/share/nginx/wordpress
+  file: src="/vagrant/src/wordpress" dest="/usr/share/nginx/wordpress" state=link
+- when: hosts_env != 'development'
+  name: (!development) test ! -e /usr/share/nginx/wordpress
+  stat: path=/usr/share/nginx/wordpress
+  register: f
+- when: hosts_env != 'development' and not f.stat.exists
+  name: (!development & first) ln -s /usr/share/nginx/html /usr/share/nginx/wordpress
+  file: src="/usr/share/nginx/html" dest="/usr/share/nginx/wordpress" state=link
+- name: ln -s /usr/share/nginx/wordpress /home/nginx/wordpress
+  file: src="/usr/share/nginx/wordpress" dest="/home/nginx/wordpress" state=link
+
 ### check/start ###
 - name: nginx -t -c /etc/nginx/nginx.conf
   shell: nginx -t -c /etc/nginx/nginx.conf
