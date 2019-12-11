@@ -97,10 +97,8 @@ httpd_front_www_servername=www.{{ httpd_front_servername }}
 # Use Subdomain
 #httpd_front_sub_servername=*.{{ httpd_front_servername }}
 #httpd_front_www_servername=
-# No use IP limit
-httpd_enable_ip_limit=0
-# Use IP limit
-#httpd_enable_ip_limit=1
+# Front access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
+front_access_control=0
 ### Load Balancer ###
 # No use
 #httpd_ssl_is_80port=0
