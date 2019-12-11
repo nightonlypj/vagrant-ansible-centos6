@@ -2,6 +2,9 @@
 <VirtualHost *:80>
 {% if httpd_ssl_is_80port == 0 %}
     ServerName {{ httpd_front_servername }}
+{% if httpd_front_sub_servername != '' %}
+    ServerAlias {{ httpd_front_sub_servername }}
+{% endif %}
 
     # SSL redirect
     RewriteEngine On
@@ -11,12 +14,15 @@
     RewriteRule ^(.*)?$ https://%{HTTP_HOST}$1 [R=301,L]
 
     ErrorLog logs/front_error_log
-    CustomLog logs/front_access_log combined
+    CustomLog logs/front_access_log {{ 'combined' if httpd_front_sub_servername == '' else 'addhost' }}
 </VirtualHost>
 
 <VirtualHost _default_:443>
 {% endif %}
     ServerName {{ httpd_front_servername }}
+{% if httpd_front_sub_servername != '' %}
+    ServerAlias {{ httpd_front_sub_servername }}
+{% endif %}
     Header set Strict-Transport-Security "max-age=31536000"
 {% if httpd_ssl_is_80port != 0 %}
 
@@ -58,6 +64,6 @@
 {% endif %}
 {% endif %}
     ErrorLog logs/front_ssl_error_log
-    CustomLog logs/front_ssl_access_log combined
+    CustomLog logs/front_ssl_access_log {{ 'combined' if httpd_front_sub_servername == '' else 'addhost' }}
 </VirtualHost>
 ### END ###

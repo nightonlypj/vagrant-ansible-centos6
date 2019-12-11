@@ -67,7 +67,12 @@ tomcat_user_password=changepasswd
 ### Apache/Nginx ###
 nginx_enable_php=1
 httpd_front_servername=test.mydomain
+# Use www redirect
+httpd_front_sub_servername=
 httpd_front_www_servername=www.{{ httpd_front_servername }}
+# Use Subdomain
+#httpd_front_sub_servername=*.{{ httpd_front_servername }}
+#httpd_front_www_servername=
 # No use IP limit
 #httpd_enable_ip_limit=0
 # Use IP limit
