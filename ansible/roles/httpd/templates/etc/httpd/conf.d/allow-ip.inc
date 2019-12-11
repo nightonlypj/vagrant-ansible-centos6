@@ -1,4 +1,4 @@
-{% if httpd_enable_ip_limit != 0 %}
+{% if front_access_control != 0 %}
 ### START ###
 Allow from 127.0.0.1
 Allow from ::1

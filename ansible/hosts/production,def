@@ -97,10 +97,14 @@ ip6tables_mongodb_internal_addresses=
 ### Apache/Nginx ###
 nginx_enable_php=1
 httpd_front_servername=mydomain
-# No use IP limit
-httpd_enable_ip_limit=0
-# Use IP limit
-#httpd_enable_ip_limit=1
+# Use www redirect
+httpd_front_sub_servername=
+httpd_front_www_servername=www.{{ httpd_front_servername }}
+# Use Subdomain
+#httpd_front_sub_servername=*.{{ httpd_front_servername }}
+#httpd_front_www_servername=
+# Front access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
+front_access_control=0
 ### Load Balancer ###
 # No use
 #httpd_ssl_is_80port=0
@@ -123,10 +127,18 @@ httpd_front_crt_file=/etc/pki/tls/certs/localhost.crt
 httpd_front_key_file=/etc/pki/tls/private/localhost.key
 httpd_front_chain_file=
 httpd_front_fullchain_file={{ httpd_front_crt_file }}
+httpd_front_www_crt_file={{ httpd_front_crt_file }}
+httpd_front_www_key_file={{ httpd_front_key_file }}
+httpd_front_www_chain_file={{ httpd_front_chain_file }}
+httpd_front_www_fullchain_file={{ httpd_front_fullchain_file }}
 # Use Let's Encrypt(1=Not overwrite, 2=Force overwrite)
 #httpd_enable_letsencrypt=1
 #httpd_front_crt_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/cert.pem
 #httpd_front_key_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/privkey.pem
 #httpd_front_chain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/chain.pem
 #httpd_front_fullchain_file=/etc/letsencrypt/live/{{ httpd_front_servername }}/fullchain.pem
+#httpd_front_www_crt_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/cert.pem
+#httpd_front_www_key_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/privkey.pem
+#httpd_front_www_chain_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/chain.pem
+#httpd_front_www_fullchain_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/fullchain.pem
 ### END ###
