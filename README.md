@@ -241,7 +241,7 @@ Syntax OK
 # curl http://dl.eff.org/certbot-auto -o certbot-auto
 # chmod 755 certbot-auto
 # unset PYTHON_INSTALL_LAYOUT
-# certbot-auto certonly --manual -d test.mydomain -d *.test.mydomain --email admin@nightonly.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --debug
+# certbot-auto certonly --manual -d test.mydomain -d *.test.mydomain --email admin@mydomain --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --debug
 Is this ok [y/d/N]: y
 (Y)es/(N)o: y
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
