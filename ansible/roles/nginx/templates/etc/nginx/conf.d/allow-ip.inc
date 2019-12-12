@@ -1,4 +1,4 @@
-{% if front_access_control != 0 %}
+{% if front_access_control != 0 or wordpress_admin_access_control != 0 %}
 ### START ###
 allow 127.0.0.1;
 allow ::1;

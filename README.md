@@ -160,7 +160,7 @@ WordPressへようこそ
 データベース接続
 	データベース名: wordpress	<- ansible/hosts/developmentのmysql_dbname
 	ユーザー名: wordpress		<- ansible/hosts/developmentのmysql_username
-	パスワード: abc123			<- ansible/hosts/developmentのmysql_password
+	パスワード: abc123		<- ansible/hosts/developmentのmysql_password
 	データベースのホスト名: localhost
 	テーブル接頭辞: wp_
 	[送信]

@@ -98,13 +98,15 @@ ip6tables_mongodb_internal_addresses=
 nginx_enable_php=1
 httpd_front_servername=staging.mydomain
 # Use www redirect
-httpd_front_sub_servername=
-httpd_front_www_servername=www.{{ httpd_front_servername }}
+#httpd_front_sub_servername=
+#httpd_front_www_servername=www.{{ httpd_front_servername }}
 # Use Subdomain
-#httpd_front_sub_servername=*.{{ httpd_front_servername }}
-#httpd_front_www_servername=
+httpd_front_sub_servername=*.{{ httpd_front_servername }}
+httpd_front_www_servername=
 # Front access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
 front_access_control=0
+# (Wordpress)Admin access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
+wordpress_admin_access_control=0
 ### Load Balancer ###
 # No use
 #httpd_ssl_is_80port=0
