@@ -57,6 +57,9 @@ iptables_redis_internal_addresses='["x.x.x.x"]'
 ip6tables_redis_internal_addresses=
 iptables_mongodb_internal_addresses='["x.x.x.x"]'
 ip6tables_mongodb_internal_addresses=
+squid_http_port=
+iptables_enable_squid_public=0
+ip6tables_enable_squid_public=0
 ### MySQL ###
 mysql_root_password=changepasswd
 mysql_dbname=mytest
@@ -84,6 +87,9 @@ iptables_redis_internal_addresses=
 ip6tables_redis_internal_addresses=
 iptables_mongodb_internal_addresses=
 ip6tables_mongodb_internal_addresses=
+squid_http_port=3128
+iptables_enable_squid_public=1
+ip6tables_enable_squid_public=1
 ### Tomcat ###
 tomcat_enable_manager=0
 tomcat_user_name=

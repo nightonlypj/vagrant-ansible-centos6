@@ -77,3 +77,6 @@
     # TODO: (Amazon) Not found php-pecl-redis, php-pecl-mongodb
 #    - role: php72-nginx
 #      tags: php72-nginx
+    # Use Squid
+    - role: squid
+      tags: squid

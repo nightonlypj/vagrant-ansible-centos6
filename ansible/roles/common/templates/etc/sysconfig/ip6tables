@@ -97,6 +97,11 @@
 {% endfor %}
 {% endif %}
 
+{% if ip6tables_enable_squid_public != 0 %}
+# TCP{{ squid_http_port }}番ポート(Squid)へのアクセスを許可
+-A INPUT -p tcp -m tcp --dport {{ squid_http_port }} -j ACCEPT
+{% endif %}
+
 # 上記のルールにマッチしなかったアクセスはログを記録して破棄
 -A INPUT -m limit --limit 1/sec -j LOG --log-prefix "[IPTABLES INPUT] : "
 -A INPUT -j DROP

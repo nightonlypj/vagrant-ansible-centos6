@@ -1,0 +1,27 @@
+### yum ###
+- name: yum -y install squid httpd-tools
+  yum: name={{ item }} state=present
+  with_items:
+    - squid
+    - httpd-tools
+
+### conf ###
+- name: cd /etc/squid; cp /vagrant/ansible/roles/squid/templates/etc/squid/squid.conf ./; chmod 640 squid.conf; chown root:squid squid.conf
+  template: src="templates/etc/squid/squid.conf" dest="/etc/squid/" mode=640 owner=root group=squid backup=yes
+  notify: service squid restart
+- name: cd /etc/squid; cp /vagrant/ansible/roles/squid/templates/etc/squid/.htpasswd ./; chmod 644 .htpasswd; chown root:root .htpasswd
+  template: src="templates/etc/squid/.htpasswd" dest="/etc/squid/" mode=644 owner=root group=root backup=yes
+
+### log ###
+- name: cd /var/log; mkdir -p squid; chmod 750 squid; chown squid:wheel squid
+  file: path="/var/log/squid" state=directory mode=750 owner=squid group=wheel
+
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/squid/templates/etc/logrotate.d/squid ./; chmod 644 squid; chown root:root squid
+  template: src="templates/etc/logrotate.d/squid" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
+### check/start ###
+- name: squid -k parse
+  shell: squid -k parse
+
+- name: service squid start; chkconfig squid on
+  service: name=squid state=started enabled=yes
