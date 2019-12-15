@@ -223,10 +223,23 @@ Is this ok [y/d/N]: y
 (Y)es/(N)o: y
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at:
+```
+
+Apacheの場合
+```
 # apachectl configtest
 Syntax OK
 # apachectl graceful
 ```
+
+Nginxの場合
+```
+# nginx -t -c /etc/nginx/nginx.conf
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+# service nginx restart
+```
+
 ※更新(certbot-auto renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
 
 ※メール「Please Confirm Your EFF Subscription」が届きます -> URLをクリック
@@ -286,11 +299,23 @@ Press Enter to Continue
 
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at:
+```
 
+Apacheの場合
+```
 # apachectl configtest
 Syntax OK
 # apachectl graceful
 ```
+
+Nginxの場合
+```
+# nginx -t -c /etc/nginx/nginx.conf
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+# service nginx restart
+```
+
 ※更新(certbot-auto renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
 
 ※メール「Please Confirm Your EFF Subscription」が届きます -> URLをクリック
