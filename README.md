@@ -146,7 +146,7 @@ $ su -
 
 ## WordPress設定(例)
 
-### hosts追加（設定例）
+### hosts追加
 
 > 192.168.12.206  dev-centos6.local
 
@@ -353,3 +353,16 @@ Syntax OK
 ※更新(certbot-auto renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
 
 ※メール「Please Confirm Your EFF Subscription」が届きます -> URLをクリック
+
+### WordPress設置(例)
+
+```
+# cd /usr/local/src
+# wget https://ja.wordpress.org/latest-ja.zip
+# unzip latest-ja.zip 
+# chown -R nginx:nginx wordpress
+
+# cd /usr/share/nginx
+# mv wordpress wordpress,`date +"%Y%m%d%H%M%S"`
+# mv /usr/local/src/wordpress ./
+```
