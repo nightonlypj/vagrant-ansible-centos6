@@ -22,7 +22,7 @@ db-servers
 ansible_ssh_port=22
 #ansible_ssh_user=ansible
 hosts_env=production
-hosts_allow_sshd=x.x.x.x
+hosts_allow_sshd=x.x.x.x, 127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fc00::]/7, [fe80::]/10
 ### system ###
 localtime=Japan
 clock_zone=Asia/Tokyo
@@ -43,24 +43,30 @@ ntpd_servers='["0.amazon.pool.ntp.org", "1.amazon.pool.ntp.org", "2.amazon.pool.
 
 [db-servers:vars]
 hosts_allow_httpd=
-hosts_allow_mysqld=127.0.0.1, x.x.x.x, [::1]
-#hosts_allow_postgresql=127.0.0.1, x.x.x.x, [::1]
+hosts_allow_mysqld=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fc00::]/7, [fe80::]/10
+#hosts_allow_postgresql=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fc00::]/7, [fe80::]/10
 hosts_allow_postgresql=
 iptables_enable_http_public=0
 ip6tables_enable_http_public=0
 iptables_tomcat_internal_addresses=
 ip6tables_tomcat_internal_addresses=
-iptables_mysqld_internal_addresses='["x.x.x.x"]'
-ip6tables_mysqld_internal_addresses=
-#iptables_postgresql_internal_addresses='["x.x.x.x"]'
+iptables_mysqld_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+ip6tables_mysqld_internal_addresses='["fc00::/7", "fe80::/10"]'
+#iptables_postgresql_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
 iptables_postgresql_internal_addresses=
+#ip6tables_postgresql_internal_addresses='["fc00::/7", "fe80::/10"]'
 ip6tables_postgresql_internal_addresses=
-#iptables_redis_internal_addresses='["x.x.x.x"]'
+#iptables_redis_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
 iptables_redis_internal_addresses=
+#ip6tables_redis_internal_addresses='["fc00::/7", "fe80::/10"]'
 ip6tables_redis_internal_addresses=
-#iptables_mongodb_internal_addresses='["x.x.x.x"]'
+#iptables_mongodb_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
 iptables_mongodb_internal_addresses=
+#ip6tables_mongodb_internal_addresses='["fc00::/7", "fe80::/10"]'
 ip6tables_mongodb_internal_addresses=
+squid_http_port=
+iptables_enable_squid_public=0
+ip6tables_enable_squid_public=0
 ### MySQL ###
 mysql_root_password=changepasswd
 #mysql_dbname=mytest
@@ -90,6 +96,12 @@ iptables_redis_internal_addresses=
 ip6tables_redis_internal_addresses=
 iptables_mongodb_internal_addresses=
 ip6tables_mongodb_internal_addresses=
+#squid_http_port=3128
+squid_http_port=
+#iptables_enable_squid_public=1
+iptables_enable_squid_public=0
+#ip6tables_enable_squid_public=1
+ip6tables_enable_squid_public=0
 ### Tomcat ###
 #tomcat_enable_manager=0
 #tomcat_user_name=

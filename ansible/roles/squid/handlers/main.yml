@@ -1,0 +1,2 @@
+- name: service squid restart
+  service: name=squid state=restarted
