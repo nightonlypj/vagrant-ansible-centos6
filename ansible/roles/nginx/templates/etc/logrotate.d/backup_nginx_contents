@@ -1,0 +1,5 @@
+### START ###
+/var/log/backup_nginx_contents.log {
+	missingok
+}
+### END ###
