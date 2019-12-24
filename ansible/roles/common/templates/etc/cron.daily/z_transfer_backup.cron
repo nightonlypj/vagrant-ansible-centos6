@@ -1,0 +1,50 @@
+#!/bin/sh
+
+BATCH_NAME='transfer_backup'
+LOG_FILE="/var/log/$BATCH_NAME.log"
+SOURCE_PATH='/var/backup'
+RSYNC_TARGET="{{ transfer_backup_rsync_target }}"
+RSYNC_OPTION="{{ transfer_backup_rsync_option }}"
+SSH_OPTION="{{ transfer_backup_ssh_option }}"
+S3_TARGET="{{ transfer_backup_s3_target }}"
+export AWS_ACCESS_KEY_ID='{{ transfer_backup_aws_access_key_id }}'
+export AWS_SECRET_ACCESS_KEY='{{ transfer_backup_aws_secret_access_key }}'
+
+error_msg=''
+write_log () {
+	echo -e "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
+	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
+}
+
+send_error_mail () {
+	[ -z "$error_msg" ] && return
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
+	write_log 'INFO' 'Send error mail'
+}
+
+rsync_transfer_files() {
+	[ -z "$RSYNC_TARGET" ] && return
+	export RSYNC_RSH="ssh -o StrictHostKeyChecking=no $SSH_OPTION"
+	ionice -c 2 -n 7 nice -n 19 rsync -auvz --delete $RSYNC_OPTION $SOURCE_PATH/ $RSYNC_TARGET$SOURCE_PATH/ >> $LOG_FILE 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' "Transfer $SOURCE_PATH -> $RSYNC_TARGET"
+		return
+	fi
+	write_log 'INFO' "Transfer $SOURCE_PATH -> $RSYNC_TARGET"
+}
+
+s3_transfer_files() {
+	[ -z "$S3_TARGET" ] && return
+	ionice -c 2 -n 7 nice -n 19 aws s3 sync --exact-timestamps --delete $SOURCE_PATH $S3_TARGET$SOURCE_PATH >> $LOG_FILE 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' "Transfer $SOURCE_PATH -> $S3_TARGET"
+		return
+	fi
+	write_log 'INFO' "Transfer $SOURCE_PATH -> $S3_TARGET"
+}
+
+write_log 'INFO' '=== START ==='
+rsync_transfer_files
+s3_transfer_files
+send_error_mail
+write_log 'INFO' '=== END ==='
