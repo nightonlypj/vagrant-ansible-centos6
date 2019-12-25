@@ -1,2 +1,4 @@
+- name: service rsyslog restart
+  service: name=rsyslog state=restarted
 - name: service postfix restart
   service: name=postfix state=restarted

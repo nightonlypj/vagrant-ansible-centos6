@@ -15,6 +15,8 @@
 
 ### Bug
 
+- メールログ(/var/log/maillog)の日時がUTCになる場合がある
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/71/
 - IPv6のサイトIPとリンクIP(IPv4だとローカルIP)はfc00::/7とfe80::/10
   - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/59/
 
