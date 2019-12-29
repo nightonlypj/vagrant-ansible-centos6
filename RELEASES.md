@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- SSL Server TestのOverall Ratingを「A」にしたい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/69/
 - バックアップを定期的に他サーバーやs3に転送したい
   - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/63/
 - htmlのバックアップを自動で取りたい
