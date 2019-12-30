@@ -56,6 +56,23 @@ aliases_critical=admin@mydomain
 ### ntpd ###
 # Use CentOS default
 ntpd_servers='["0.centos.pool.ntp.org", "1.centos.pool.ntp.org", "2.centos.pool.ntp.org", "3.centos.pool.ntp.org"]'
+### Transfer backup ###
+# No use rsync
+transfer_backup_rsync_target=
+transfer_backup_rsync_option=
+transfer_backup_ssh_option=
+# Use rsync (/var/backup -> Other server)
+#transfer_backup_rsync_target='(Set [username])@(Set [hostname] or [IP address]):~/`hostname`'
+#transfer_backup_rsync_option='--bwlimit=5120'
+#transfer_backup_ssh_option='-p (Set [SSH port]) -i (Set [SSH private key file])'
+# No use Amazon S3
+transfer_backup_s3_target=
+transfer_backup_aws_access_key_id=
+transfer_backup_aws_secret_access_key=
+# Use AWS Amazon S3 (/var/backup -> Amazon S3)
+#transfer_backup_s3_target=s3://(Set [Bucket name]/`hostname`
+#transfer_backup_aws_access_key_id=(Set [AWS_ACCESS_KEY_ID] or [Attach IAM roll])
+#transfer_backup_aws_secret_access_key=(Set [AWS_SECRET_ACCESS_KEY] or [Attach IAM roll])
 ### END ###
 
 [db-servers:vars]

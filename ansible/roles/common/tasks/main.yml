@@ -143,3 +143,14 @@
   service: name=iptables state=started enabled=yes
 - name: service ip6tables start; chkconfig ip6tables on
   service: name=ip6tables state=started enabled=yes
+
+### Transfer backup ###
+- when: transfer_backup_rsync_target != '' or transfer_backup_rsync_target != ''
+  name: mkdir -p /var/backup; chmod 750 /var/backup; chown root:wheel /var/backup
+  file: path="/var/backup" state=directory mode=750 owner=root group=wheel
+- when: transfer_backup_rsync_target != '' or transfer_backup_rsync_target != ''
+  name: cd /etc/cron.daily; cp /vagrant/ansible/roles/common/templates/etc/cron.daily/z_transfer_backup.cron ./; chmod 740 z_transfer_backup.cron; chown root:wheel z_transfer_backup.cron
+  template: src="templates/etc/cron.daily/z_transfer_backup.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- when: transfer_backup_rsync_target != '' or transfer_backup_rsync_target != ''
+  name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/common/templates/etc/logrotate.d/transfer_backup ./; chmod 644 transfer_backup; chown root:root transfer_backup
+  template: src="templates/etc/logrotate.d/transfer_backup" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no

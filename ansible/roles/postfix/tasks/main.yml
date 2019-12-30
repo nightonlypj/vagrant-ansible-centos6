@@ -3,6 +3,12 @@
   yum: name=postfix state=present
 
 ### conf ###
+- name: mkdir -p /var/spool/postfix/etc; chmod 755 /var/spool/postfix/etc; chown root:root /var/spool/postfix/etc
+  file: path="/var/spool/postfix/etc" state=directory mode=755 owner=root group=root
+- name: ln -s /etc/localtime /var/spool/postfix/etc/localtime
+  file: src="/etc/localtime" dest="/var/spool/postfix/etc/localtime" state=link
+  notify: service rsyslog restart
+
 - name: cd /etc/postfix; cp /vagrant/ansible/roles/postfix/templates/etc/postfix/main.cf ./; chmod 644 main.cf; chown root:root main.cf
   template: src="templates/etc/postfix/main.cf" dest="/etc/postfix/" mode=644 owner=root group=root backup=yes
   notify: service postfix restart

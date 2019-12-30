@@ -53,12 +53,25 @@
     - "templates/var/www/cgi-bin/*"
 
 ### home ###
+- name: mkdir -p /home/apache; chmod 700 /home/apache; chown apache:apache /home/apache
+  file: path="/home/apache" state=directory mode=700 owner=apache group=apache
 - name: ln -s /var/log/httpd /home/apache/log
   file: src="/var/log/httpd" dest="/home/apache/log" state=link
 - name: ln -s /var/www/html /home/apache/html
   file: src="/var/www/html" dest="/home/apache/html" state=link
 - name: ln -s /var/www/cgi-bin /home/apache/cgi-bin
   file: src="/var/www/cgi-bin" dest="/home/apache/cgi-bin" state=link
+
+### backup ###
+- name: mkdir -p /var/backup/httpd_contents; chmod 750 /var/backup/{.,httpd_contents}; chown root:wheel /var/backup/{.,httpd_contents}
+  file: path={{ item }} state=directory mode=750 owner=root group=wheel
+  with_items:
+    - "/var/backup"
+    - "/var/backup/httpd_contents"
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/httpd/templates/etc/cron.daily/backup_httpd_contents.cron ./; chmod 740 backup_httpd_contents.cron; chown root:wheel backup_httpd_contents.cron
+  template: src="templates/etc/cron.daily/backup_httpd_contents.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/httpd/templates/etc/logrotate.d/backup_httpd_contents ./; chmod 644 backup_httpd_contents; chown root:root backup_httpd_contents
+  template: src="templates/etc/logrotate.d/backup_httpd_contents" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 
 ### check/start ###
 - name: apachectl configtest

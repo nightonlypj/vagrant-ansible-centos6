@@ -1,0 +1,5 @@
+### START ###
+/var/log/backup_httpd_contents.log {
+	missingok
+}
+### END ###
