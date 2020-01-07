@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.2.0
+
+- MongoDBのバックアップを自動で取りたい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/68/
+
 ## 1.1.0
 
 - SSL Server TestのOverall Ratingを「A」にしたい
