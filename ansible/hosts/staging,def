@@ -21,6 +21,7 @@ db-servers
 [all:vars]
 ansible_ssh_port=22
 #ansible_ssh_user=ansible
+sshd_password_authentication=no
 hosts_env=staging
 hosts_allow_sshd=x.x.x.x, 127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fc00::]/7, [fe80::]/10
 ### system ###

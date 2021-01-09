@@ -140,12 +140,20 @@ AuthorizedKeysFile .ssh/authorized_keys
 # EC2 uses keys for remote access
 PasswordAuthentication no
 #PermitEmptyPasswords no
+### START ###
 {% else %}
 # To disable tunneled clear text passwords, change to no here!
 #PasswordAuthentication yes
 #PermitEmptyPasswords no
+### START ###
+#PasswordAuthentication yes
+{% endif %}
+{% if sshd_password_authentication == 'no' %}
+PasswordAuthentication no
+{% else %}
 PasswordAuthentication yes
 {% endif %}
+### END ###
 
 # Change to no to disable s/key passwords
 #ChallengeResponseAuthentication yes
