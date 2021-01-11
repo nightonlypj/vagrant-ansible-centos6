@@ -220,7 +220,12 @@ $ exit
 # curl http://dl.eff.org/certbot-auto -o certbot-auto
 # chmod 755 certbot-auto
 # unset PYTHON_INSTALL_LAYOUT
+
+Apacheの場合
 # certbot-auto certonly --webroot -w /var/www/html -d test.mydomain --email admin@mydomain --agree-tos --debug
+Nginxの場合
+# certbot-auto certonly --webroot -w /usr/share/nginx/html -d test.mydomain --email admin@mydomain --agree-tos --debug
+
 Is this ok [y/d/N]: y
 (Y)es/(N)o: y
 IMPORTANT NOTES:

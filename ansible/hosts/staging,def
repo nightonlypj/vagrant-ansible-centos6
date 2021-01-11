@@ -83,12 +83,18 @@ mysql_root_password=changepasswd
 mysql_dbname=mytest
 mysql_username=myuser
 mysql_password=changepasswd
+mysql_test_dbname=
+mysql_test_username=
+mysql_test_password=
 mysql_validate_password_policy=LOW
 mysql_validate_password_length=6
 ### PostgreSQL ###
 postgresql_dbname=pgtest
 postgresql_username=pguser
 postgresql_password=changepasswd
+postgresql_test_dbname=
+postgresql_test_username=
+postgresql_test_password=
 ### END ###
 
 [web-servers:vars]

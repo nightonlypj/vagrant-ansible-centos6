@@ -135,3 +135,19 @@
     priv: "{{ mysql_dbname }}.*:ALL"
     login_user: root
     login_password: "{{ mysql_root_password }}"
+
+- when: mysql_test_dbname != ''
+  name: (test) mysql> CREATE DATABASE {{ mysql_test_dbname }};
+  mysql_db:
+    name: "{{ mysql_test_dbname }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+- when: mysql_test_username != ''
+  name: (test) mysql> CREATE USER '{{ mysql_test_username }}'@'%' IDENTIFIED BY '{{ mysql_test_password }}'; GRANT ALL PRIVILEGES ON {{ mysql_test_dbname }}.* TO '{{ mysql_test_username }}'@'%';
+  mysql_user:
+    name: "{{ mysql_test_username }}"
+    host: "%"
+    password: "{{ mysql_test_password }}"
+    priv: "{{ mysql_test_dbname }}.*:ALL"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
