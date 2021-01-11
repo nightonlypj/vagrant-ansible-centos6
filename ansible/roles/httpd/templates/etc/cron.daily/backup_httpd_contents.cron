@@ -35,7 +35,7 @@ delete_target_files() {
 			continue
 		fi
 
-		ionice -c 2 -n 7 nice -n 19 rm $file > /dev/null 2>> $LOG_FILE
+		ionice -c 2 -n 7 nice -n 19 rm -f $file > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 0 ]; then
 			write_log 'ERROR' "Delete $file"
 			continue
@@ -50,7 +50,7 @@ compress_files() {
 	ionice -c 2 -n 7 nice -n 19 tar zcvf $file $SOURCE_NAME > /dev/null 2>> $LOG_FILE
 	if [ $? -ne 0 ]; then
 		write_log 'ERROR' "Compress $SOURCE_PATH/$SOURCE_NAME -> $file"
-		continue
+		return
 	fi
 	write_log 'INFO' "Compress $SOURCE_PATH/$SOURCE_NAME -> $file"
 

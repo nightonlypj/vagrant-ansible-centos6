@@ -135,6 +135,8 @@ $ su -
 
 ## サーバー側使用方法(例)
 
+※以降は、サーバー構築時のみ実施
+
 ### ansibleユーザー作成・鍵作成（ローカル）
 
 ローカルで実施（初回のみ）
@@ -196,7 +198,7 @@ $ exit
 ```
 # su - ansible
 $ cd /vagrant/ansible
-$ ansible-playbook playbook.yml -i hosts/test -l all --ask-sudo-pass
+$ ansible-playbook playbook.yml -i hosts/test -l all --ask-become-pass
 SUDO password: ********(ansibleのPW)
 Are you sure you want to continue connecting (yes/no)? yes
 $ exit
@@ -218,7 +220,12 @@ $ exit
 # curl http://dl.eff.org/certbot-auto -o certbot-auto
 # chmod 755 certbot-auto
 # unset PYTHON_INSTALL_LAYOUT
+
+Apacheの場合
 # certbot-auto certonly --webroot -w /var/www/html -d test.mydomain --email admin@mydomain --agree-tos --debug
+Nginxの場合
+# certbot-auto certonly --webroot -w /usr/share/nginx/html -d test.mydomain --email admin@mydomain --agree-tos --debug
+
 Is this ok [y/d/N]: y
 (Y)es/(N)o: y
 IMPORTANT NOTES:

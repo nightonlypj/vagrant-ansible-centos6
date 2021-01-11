@@ -75,3 +75,17 @@
     password: "{{ postgresql_password }}"
     login_user: postgres
   become_user: postgres
+
+- when: postgresql_test_dbname != ''
+  name: (test) sudo -u postgres createdb {{ postgresql_test_dbname }}
+  postgresql_db:
+    name: "{{ postgresql_test_dbname }}"
+    login_user: postgres
+  become_user: postgres
+- when: postgresql_test_username != ''
+  name: (test) sudo -u postgres createuser -P {{ postgresql_test_username }}; {{ postgresql_test_password }}
+  postgresql_user:
+    name: "{{ postgresql_test_username }}"
+    password: "{{ postgresql_test_password }}"
+    login_user: postgres
+  become_user: postgres

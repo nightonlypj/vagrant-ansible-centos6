@@ -34,7 +34,7 @@ delete_target_files() {
 			continue
 		fi
 
-		ionice -c 2 -n 7 nice -n 19 rm $file > /dev/null 2>> $LOG_FILE
+		ionice -c 2 -n 7 nice -n 19 rm -f $file > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 0 ]; then
 			write_log 'ERROR' "Delete $file"
 			continue
