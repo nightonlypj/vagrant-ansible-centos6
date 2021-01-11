@@ -22,6 +22,17 @@
 - name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/postgresql/templates/etc/logrotate.d/logcompress_mongodb ./; chmod 644 logcompress_mongodb; chown root:root logcompress_mongodb
   template: src="templates/etc/logrotate.d/logcompress_mongodb" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
 
+### backup ###
+- name: mkdir -p /var/backup/mongodump; chmod 750 /var/backup/{.,mongodump}; chown root:wheel /var/backup/{.,mongodump}
+  file: path={{ item }} state=directory mode=750 owner=root group=wheel
+  with_items:
+    - "/var/backup"
+    - "/var/backup/mongodump"
+- name: cd /etc/cron.daily; cp /vagrant/ansible/roles/mongodb/templates/etc/cron.daily/backup_mongodb.cron ./; chmod 740 backup_mongodb.cron; chown root:wheel backup_mongodb.cron
+  template: src="templates/etc/cron.daily/backup_mongodb.cron" dest="/etc/cron.daily/" mode=740 owner=root group=wheel backup=no
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/mongodb/templates/etc/logrotate.d/backup_mongodb ./; chmod 644 backup_mongodb; chown root:root backup_mongodb
+  template: src="templates/etc/logrotate.d/backup_mongodb" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+
 ### start ###
 - name: service mongod start; chkconfig mongod on
   service: name=mongod state=started enabled=yes

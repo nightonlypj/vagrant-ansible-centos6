@@ -1,0 +1,5 @@
+### START ###
+/var/log/backup_mongodb.log {
+	missingok
+}
+### END ###

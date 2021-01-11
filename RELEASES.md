@@ -1,5 +1,14 @@
 # リリースノート
 
+## 1.2.0
+
+- テスト用のデータベースを作成できるようしたい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/314/
+- SSHパスワード認証を設定で変更できるようにしたい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/313/
+- MongoDBのバックアップを自動で取りたい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/68/
+
 ## 1.1.0 (wordpress branch)
 
 - WordPress環境も作れるようにしたい（別ブランチ）

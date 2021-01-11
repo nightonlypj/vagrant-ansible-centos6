@@ -1,14 +1,13 @@
 #!/bin/sh
 
-BATCH_NAME='logcompress_postgresql'
+BATCH_NAME='backup_mongodb'
 LOG_FILE="/var/log/$BATCH_NAME.log"
-TARGET_PATH='/var/log/pgsql'
-TARGET_NAME='*-*.*'
-NOT_TARGET_NAME=`date +"*-%Y%m%d.*"`
+TARGET_PATH='/var/backup/mongodump'
+TARGET_NAME='*_*.tar.gz'
 {% if hosts_env == 'development' or hosts_env == 'test' %}
-RM_MTIME=7
+RM_MTIME=2
 {% else %}
-RM_MTIME=30
+RM_MTIME=7
 {% endif %}
 ATTR_CODE=660
 GROUP_NAME='wheel'
@@ -43,32 +42,43 @@ delete_target_files() {
 	done
 }
 
-compress_target_files() {
-	files=`ionice -c 2 -n 7 nice -n 19 find $TARGET_PATH/ -name "$TARGET_NAME" -not -name "$NOT_TARGET_NAME" -not -name "*.gz" -type f`
-	for file in $files; do
-		fuser $file > /dev/null 2>> $LOG_FILE
-		if [ $? -ne 1 ]; then
-			write_log 'INFO' "Skip $file"
-			continue
-		fi
+dump_compress_files() {
+	path="$TARGET_PATH/`date "+%Y%m%d%H%M%S"`"
+	ionice -c 2 -n 7 nice -n 19 mongodump --out $path >> $LOG_FILE 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' "Dump $path"
+		return
+	fi
+	write_log 'INFO' "Dump $path"
 
-		ionice -c 2 -n 7 nice -n 19 gzip -f $file > /dev/null 2>> $LOG_FILE
+	cd $path
+	databases=`ls`
+	for database in $databases; do
+		file="$TARGET_PATH/${database}_`date "+%Y%m%d"`.tar.gz"
+		ionice -c 2 -n 7 nice -n 19 tar zcvf $file $database > /dev/null 2>> $LOG_FILE
 		if [ $? -ne 0 ]; then
-			write_log 'ERROR' "Compress $file -> .gz"
+			write_log 'ERROR' "Compress $database -> $file"
 			continue
 		fi
-		write_log 'INFO' "Compress $file -> .gz"
+		write_log 'INFO' "Compress $database -> $file"
 
-		chmod $ATTR_CODE $file.gz > /dev/null 2>> $LOG_FILE
-		[ $? -ne 0 ] && write_log 'ERROR' "Chmod $file.gz"
+		chmod $ATTR_CODE $file > /dev/null 2>> $LOG_FILE
+		[ $? -ne 0 ] && write_log 'ERROR' "Chmod $file"
 
-		chgrp $GROUP_NAME $file.gz > /dev/null 2>> $LOG_FILE
-		[ $? -ne 0 ] && write_log 'ERROR' "Chgrp $file.gz"
+		chgrp $GROUP_NAME $file > /dev/null 2>> $LOG_FILE
+		[ $? -ne 0 ] && write_log 'ERROR' "Chgrp $file"
 	done
+
+	ionice -c 2 -n 7 nice -n 19 rm -fr $path > /dev/null 2>> $LOG_FILE
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' "Delete $path"
+		return
+	fi
+	write_log 'INFO' "Delete $path"
 }
 
 write_log 'INFO' '=== START ==='
 delete_target_files
-compress_target_files
+dump_compress_files
 send_error_mail
 write_log 'INFO' '=== END ==='
