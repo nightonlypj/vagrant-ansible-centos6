@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.2.0 (rails branch)
+
+- rails-app-originを簡単に動かせるブランチが欲しい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/315/
+
 ## 1.2.0
 
 - テスト用のデータベースを作成できるようしたい

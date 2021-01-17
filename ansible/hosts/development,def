@@ -15,22 +15,34 @@ hosts_env=development
 hosts_allow_sshd=127.0.0.1, 10.0.0.0/255.0.0.0, 172.16.0.0/255.240.0.0, 192.168.0.0/255.255.0.0, [::1], [fc00::]/7, [fe80::]/10
 hosts_allow_httpd=ALL
 hosts_allow_mysqld={{ hosts_allow_sshd }}
-hosts_allow_postgresql={{ hosts_allow_sshd }}
+#hosts_allow_postgresql={{ hosts_allow_sshd }}
+hosts_allow_postgresql=
 iptables_enable_http_public=1
 ip6tables_enable_http_public=1
-iptables_tomcat_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
-ip6tables_tomcat_internal_addresses='["fc00::/7", "fe80::/10"]'
+#iptables_tomcat_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+iptables_tomcat_internal_addresses=
+#ip6tables_tomcat_internal_addresses='["fc00::/7", "fe80::/10"]'
+ip6tables_tomcat_internal_addresses=
 iptables_mysqld_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
 ip6tables_mysqld_internal_addresses='["fc00::/7", "fe80::/10"]'
-iptables_postgresql_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
-ip6tables_postgresql_internal_addresses='["fc00::/7", "fe80::/10"]'
-iptables_redis_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
-ip6tables_redis_internal_addresses='["fc00::/7", "fe80::/10"]'
-iptables_mongodb_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
-ip6tables_mongodb_internal_addresses='["fc00::/7", "fe80::/10"]'
-squid_http_port=3128
-iptables_enable_squid_public=1
-ip6tables_enable_squid_public=1
+#iptables_postgresql_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+iptables_postgresql_internal_addresses=
+#ip6tables_postgresql_internal_addresses='["fc00::/7", "fe80::/10"]'
+ip6tables_postgresql_internal_addresses=
+#iptables_redis_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+iptables_redis_internal_addresses=
+#ip6tables_redis_internal_addresses='["fc00::/7", "fe80::/10"]'
+ip6tables_redis_internal_addresses=
+#iptables_mongodb_internal_addresses='["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+iptables_mongodb_internal_addresses=
+#ip6tables_mongodb_internal_addresses='["fc00::/7", "fe80::/10"]'
+ip6tables_mongodb_internal_addresses=
+#squid_http_port=3128
+squid_http_port=
+#iptables_enable_squid_public=1
+iptables_enable_squid_public=0
+#ip6tables_enable_squid_public=1
+ip6tables_enable_squid_public=0
 ### system ###
 localtime=Japan
 clock_zone=Asia/Tokyo
@@ -67,39 +79,47 @@ transfer_backup_aws_secret_access_key=
 [db-servers:vars]
 ### MySQL ###
 mysql_root_password=xyz789
-mysql_dbname=mytest
-mysql_username=myuser
+mysql_dbname=rails_app_development
+mysql_username=rails_app
 mysql_password=abc123
-mysql_test_dbname=mytest_test
-mysql_test_username=myuser_test
+mysql_test_dbname=rails_app_test
+mysql_test_username=rails_app_test
 mysql_test_password=abc123
-mysql_validate_password_policy=LOW
-mysql_validate_password_length=6
+#mysql_validate_password_policy=LOW
+#mysql_validate_password_length=6
 ### PostgreSQL ###
-postgresql_dbname=pgtest
-postgresql_username=pguser
-postgresql_password=abc123
-postgresql_test_dbname=pgtest_test
-postgresql_test_username=pguser_test
-postgresql_test_password=abc123
+#postgresql_dbname=rails_app_development
+#postgresql_username=rails_app
+#postgresql_password=abc123
+#postgresql_test_dbname=rails_app_test
+#postgresql_test_username=rails_app_test
+#postgresql_test_password=abc123
 ### END ###
 
 [web-servers:vars]
+### rails_app ###
+rails_app_name='rails-app-origin'	# Tips: Vagrantfileのconfig.vm.synced_folderと同じにする
+rails_app_username=rails-app
+rails_app_userid=410
+rails_app_groupname=nginx
 ### Tomcat ###
-tomcat_enable_manager=1
-tomcat_user_name=admin
-tomcat_user_password=xyz789
+#tomcat_enable_manager=1
+#tomcat_user_name=admin
+#tomcat_user_password=xyz789
 ### Apache/Nginx ###
-nginx_enable_php=1
-httpd_front_servername=dev-centos6.local
+#nginx_enable_php=1
+nginx_enable_php=0
+httpd_front_servername='localhost.local'	# Tips: Railsアプリのドメイン(config/settings/development.ymlのbase_domain)と同じにする
 # Use www redirect
-httpd_front_sub_servername=
-httpd_front_www_servername=www.{{ httpd_front_servername }}
+#httpd_front_sub_servername=
+#httpd_front_www_servername=www.{{ httpd_front_servername }}
 # Use Subdomain
-#httpd_front_sub_servername=*.{{ httpd_front_servername }}
-#httpd_front_www_servername=
+httpd_front_sub_servername=*.{{ httpd_front_servername }}
+httpd_front_www_servername=
 # Front access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
 front_access_control=0
+# (RailsAdmin)Admin access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
+rails_admin_access_control=0
 ### Load Balancer ###
 # No use
 httpd_ssl_is_80port=0

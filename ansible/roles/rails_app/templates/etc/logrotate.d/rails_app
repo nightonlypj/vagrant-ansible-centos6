@@ -1,0 +1,15 @@
+### START ###
+/home/{{ rails_app_username }}/{{ rails_app_name }}/log/*.log {
+    daily
+{% if hosts_env == 'development' or hosts_env == 'test' %}
+    rotate 7
+{% else %}
+    rotate 90
+{% endif %}
+    missingok
+    sharedscripts
+    postrotate
+        pid=/home/{{ rails_app_username }}/{{ rails_app_name }}/tmp/pids/unicorn.pid
+        test -s $pid && kill -USR1 "$(cat $pid)"
+    endscript
+}

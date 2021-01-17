@@ -1,0 +1,45 @@
+### yum ###
+- name: yum -y install libffi-devel readline-devel ruby sqlite-devel
+  yum: name={{ item }} state=present
+  with_items:
+    - libffi-devel
+    - readline-devel
+    - ruby
+    - sqlite-devel
+
+- name: test ! -e /etc/yum.repos.d/yarn.repo
+  stat: path=/etc/yum.repos.d/yarn.repo
+  register: f
+- when: not f.stat.exists
+  name: curl --silent --location https://rpm.nodesource.com/setup_12.x | sudo bash -
+  shell: 'curl --silent --location https://rpm.nodesource.com/setup_12.x | sudo bash -'
+- when: not f.stat.exists
+  name: curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
+  shell: 'curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo'
+- name: yum -y install yarn
+  yum: name=yarn state=present
+  ignore_errors: yes # Error: Package: 2:nodejs-12.16.1-1nodesource.x86_64 (nodesource)
+
+### user ###
+- name: useradd -g {{ rails_app_groupname }} -u {{ rails_app_userid }} {{ rails_app_username }}
+  user: name={{ rails_app_username }} group={{ rails_app_groupname }} uid={{ rails_app_userid }} state=present
+- name: chmod 750 /home/{{ rails_app_username }}
+  file: path="/home/{{ rails_app_username }}" state=directory mode=750
+
+### app ###
+- when: hosts_env == 'development'
+  name: (development) ln -s /mnt/{{ rails_app_name }} /home/{{ rails_app_username }}/{{ rails_app_name }}
+  file: src="/mnt/{{ rails_app_name }}" dest="/home/{{ rails_app_username }}/{{ rails_app_name }}" state=link
+
+### log ###
+- name: cd /etc/logrotate.d; cp /vagrant/ansible/roles/rails_app/templates/etc/logrotate.d/rails_app ./{{ rails_app_name }}; chmod 644 {{ rails_app_name }}; chown root:root {{ rails_app_name }}
+  template: src="templates/etc/logrotate.d/rails_app" dest="/etc/logrotate.d/{{ rails_app_name }}" mode=644 owner=root group=root backup=no
+
+### cron ###
+- when: hosts_env != 'development'
+  name: (!development) su - {{ rails_app_username }}; echo "@reboot bash -l -c 'sleep 30; cd ~/{{ rails_app_name }}; bundle exec unicorn -c config/unicorn.rb -D -E `echo $RAILS_ENV` > ~/reboot_{{ rails_app_name }}.log 2>&1'" | crontab -
+  cron:
+    name: bundle exec unicorn
+    user: "{{ rails_app_username }}"
+    special_time: reboot
+    job: bash -l -c 'sleep 30; cd ~/{{ rails_app_name }}; bundle exec unicorn -c config/unicorn.rb -D -E `echo $RAILS_ENV` > ~/reboot_{{ rails_app_name }}.log 2>&1'
