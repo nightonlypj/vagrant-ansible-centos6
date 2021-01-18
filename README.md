@@ -578,7 +578,11 @@ $ rails db:seed
 $ mkdir -p tmp/{pids,sockets}
 $ cd config/settings
 $ ln -s production.yml,test production.yml
-$ cd ../..
+$ cd ../../public
+本番> $ ln -s robots.txt,allow robots.txt
+その他> $ ln -s robots.txt,disallow robots.txt
+$ cd ..
+
 $ rails assets:precompile
 $ rails unicorn:start
 ```
