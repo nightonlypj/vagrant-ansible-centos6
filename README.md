@@ -38,6 +38,7 @@ ansible
         postgresql      ：PostgreSQLの設定
         postgresql96    ：PostgreSQL 9.6の設定
         redis           ：Redisの設定
+        mongodb         ：MongoDBの設定
         imagick         ：ImageMagickの設定
         java18          ：Java 1.8の設定
         tomcat          ：Tomcatの設定
@@ -108,7 +109,7 @@ DNSで設定したホスト名を指定
 
 [CentOS6 Vagrant Box提供(VirtualBox向け)](https://dev.azure.com/nightonly/vagrant-ansible-origin/_git/vagrant-box-centos6)から最新のBoxをダウンロードしてください。
 
-Windowsコマンドプロンプト/Mac・Linuxターミナル  
+Mac・Linuxターミナル/Windowsコマンドプロンプト  
 ※下記の`~/Downloads/CentOS6.9.box`はダウンロードしたBoxのパスを指定してください。  
 ```
 $ vagrant box add CentOS6 ~/Downloads/CentOS6.9.box
@@ -118,14 +119,22 @@ $ vagrant vbguest
 $ vagrant reload
 ```
 
-SSHターミナル  
-※ユーザー名・パスワード・ポートは初期設定の値に変更して実行してください。  
-※Mac・Linuxの場合は`vagrant ssh`でも接続可（Windowsは設定すれば接続可）
+※Mac・Linuxの場合（Windowsは設定すれば接続可）
 ```
-$ ssh admin@127.0.0.1 -p 2206
+$ vagrant ssh
+$ sudo -s
+```
+
+※Windowsの場合（Mac・Linuxでも可）　※ユーザー名・パスワード・ポートは初期設定の値に変更して実行してください。
+```
+$ ssh admin@127.0.0.1 -p 2207
 : abc123
 $ su -
 : xyz789
+（または $ sudo -s）
+```
+
+```
 # cd /vagrant/ansible
 # ansible-playbook playbook.yml -i hosts/development -l development
 ```
@@ -222,9 +231,9 @@ $ exit
 # unset PYTHON_INSTALL_LAYOUT
 
 Apacheの場合
-# certbot-auto certonly --webroot -w /var/www/html -d test.mydomain --email admin@mydomain --agree-tos --debug
+# certbot-auto certonly --webroot -w /var/www/html -d test.mydomain -d www.test.mydomain --email admin@mydomain --agree-tos --debug
 Nginxの場合
-# certbot-auto certonly --webroot -w /usr/share/nginx/html -d test.mydomain --email admin@mydomain --agree-tos --debug
+# certbot-auto certonly --webroot -w /usr/share/nginx/html -d test.mydomain -d www.test.mydomain --email admin@mydomain --agree-tos --debug
 
 Is this ok [y/d/N]: y
 (Y)es/(N)o: y
