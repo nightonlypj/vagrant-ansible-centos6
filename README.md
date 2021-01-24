@@ -57,7 +57,7 @@ RELEASES.md     ：リリースノート
 Vagrantfile,def ：Vagrantfileのサンプル（開発環境用）
 ```
 
-## 初期設定
+## 環境構築手順
 
 Mac・Linuxターミナル(Windowsはエクスプローラー・エディタ等で操作)
 
