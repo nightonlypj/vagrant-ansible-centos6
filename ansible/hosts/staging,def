@@ -127,7 +127,7 @@ ip6tables_mongodb_internal_addresses=
 #tomcat_user_password=
 ### Apache/Nginx ###
 nginx_enable_php=1
-httpd_front_servername=staging.mydomain
+httpd_front_servername=stg.mydomain
 # Use www redirect
 #httpd_front_sub_servername=
 #httpd_front_www_servername=www.{{ httpd_front_servername }}
