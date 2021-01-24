@@ -133,7 +133,7 @@ rails_app_groupname=nginx
 ### Apache/Nginx ###
 #nginx_enable_php=1
 nginx_enable_php=0
-httpd_front_servername='staging.mydomain'	# Tips: Railsアプリのドメイン(config/settings/production.yml,stagingのbase_domain)と同じにする
+httpd_front_servername='stg.mydomain'	# Tips: Railsアプリのドメイン(config/settings/production.yml,stagingのbase_domain)と同じにする
 # Use www redirect
 #httpd_front_sub_servername=
 #httpd_front_www_servername=www.{{ httpd_front_servername }}
