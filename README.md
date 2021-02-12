@@ -204,11 +204,13 @@ src/wordpress/wp-config.php に上記で表示された内容を追加
 
 ## サーバー側使用方法(例)
 
-※以降は、サーバー構築時のみ実施
+※以降は、サーバー構築時のみ実行
 
-### ansibleユーザー作成・鍵作成（ローカル）
+### ansibleユーザー作成・鍵作成
 
-ローカルで実施（初回のみ）
+Tips: VMからではなく、Macから直接実行する場合は、サーバー側で実行（2台目の場合は除く）
+
+VMに接続して実行（初回のみ）
 ```
 # useradd -g wheel -u 400 ansible
 # passwd ansible
@@ -226,9 +228,21 @@ $ cat ~/.ssh/id_rsa.pub
 $ exit
 ```
 
+Tips: VMからではなく、Macから直接実行する場合は、下記も実行
+
+各サーバーで実行（初回のみ）
+```
+# su - ansible
+$ cd .ssh
+$ ln -s id_rsa.pub authorized_keys
+$ exit
+```
+
 ### ansibleユーザー作成・鍵設置（各サーバー）
 
-各サーバーで実施（初回のみ）
+Tips: VMからではなく、Macから直接実行する場合は、サーバーで作成した鍵をMacに設置（2台目の場合は実行）
+
+VMに接続して実行（初回のみ）
 ```
 # useradd -g wheel -u 400 ansible
 # passwd ansible
@@ -249,7 +263,7 @@ $ exit
 
 ※ansibleユーザー（wheelグループ）でsudo出来るようにします。
 
-各サーバーで実施（初回のみ）
+各サーバーで実行（初回のみ）
 ```
 # grep -e "^%wheel\s*ALL=(ALL)\s*ALL$" /etc/sudoers > /dev/null
 # echo $?
@@ -260,19 +274,45 @@ $ exit
 # echo -e "%wheel\tALL=(ALL)\tALL" >> /etc/sudoers
 ```
 
-### Playbook実行（ローカル）
+### ssh/config設定（Macから直接実行する場合）
 
-ローカルで実施  
+Macで実行
+```
+$ vi ~/.ssh/config
+---- ここから ----
+Host railsapp-test_ansible
+  Hostname 【ドメイン名 or IP】
+  User ansible
+  IdentityFile 【サーバーで作成した鍵を設置したパス】
+---- ここまで ----
+```
+
+```
+$ vi ansible/hosts/test
+---- ここから ----
+test.mydomain
+　↓
+railsapp-test_ansible
+---- ここまで ----
+```
+
+### Playbook実行
+
+Tips: VMからではなく、Macから直接実行する場合は、suは不要でログディレクトリを作成してからansible-playbookコマンドを実行
+>  cd ansible  
+> mkdir ../log
+
+VMに接続して実行  
 ※下記はtestの例です。他の環境を使用する場合は、hosts/`test`を変更して実行してください。
 ```
 # su - ansible
 $ cd /vagrant/ansible
 $ ansible-playbook playbook.yml -i hosts/test -l all --ask-become-pass
-SUDO password: ********(ansibleのPW)
+BECOME password: ********(ansibleのPW)
 Are you sure you want to continue connecting (yes/no)? yes
 $ exit
 ```
-※特定のサーバーのみ実施する場合は`all`を`web-servers`等に変えてください。
+※特定のサーバーのみ実行する場合は`all`を`web-servers`等に変えてください。
 
 ### Let's Encrypt初期設定（各サーバー）[使用時のみ]
 
@@ -280,7 +320,7 @@ $ exit
 
 ※インターネットから http://[対象ドメイン]/.well-known/acme-challenge/ にアクセス出来る必要があります。（存在確認の為）
 
-各サーバーで実施（初回のみ）  
+各サーバーで実行（初回のみ）  
 ※下記のドメイン名・メールアドレスを変更して実行してください。  
 ※複数のドメインを使用する場合は、certbot-autoの行を複数回実行してください。
 ```
@@ -322,7 +362,7 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 #### マルチドメイン証明書の場合
 
-各サーバーで実施（初回のみ）  
+各サーバーで実行（初回のみ）  
 ※下記のドメイン名・メールアドレスを変更して実行してください。  
 ※複数のドメインを使用する場合は、certbot-autoの行を複数回実行してください。
 ```
