@@ -313,7 +313,7 @@ PCのhostsに下記を追加
 ※IPは、VMのIPを指定（Vagrantfileで設定した値）
 ```
 $ sudo vi /etc/hosts
-192.168.12.207   localhost.local customer1.localhost.local public1.localhost.local customer2.localhost.local
+192.168.12.206   localhost.local
 ```
 
 - http://localhost.local
@@ -322,6 +322,18 @@ $ sudo vi /etc/hosts
   - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照
 
 ※この接続ではプライバシーが保護されません [詳細設定] -> [localhost.local にアクセスする（安全ではありません）]
+
+### Tips: hostsを使わないようにしたい場合
+
+※サブドメインを利用するアプリの場合、hostsにワイルドカードが使えない為、毎回設定を追加する必要がある。
+
+Railsアプリのconfig/settings/development.yml  
+※IPは、VMのIPを指定（Vagrantfileで設定した値）  
+> base_domain: '192.168.12.206.nip.io'  
+> cookie_domain: '192.168.12.206.nip.io'
+
+ansible/hosts/developmentを変更後、ansible-playbookコマンドを実行    
+> httpd_front_servername='192.168.12.206.nip.io'	# Tips: Railsアプリのドメイン(config/settings/development.ymlのbase_domain)と同じにする
 
 ---
 
