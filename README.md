@@ -239,7 +239,7 @@ railsapp-test_ansible
 ### Playbook実行
 
 Tips: VMからではなく、Macから直接実行する場合は、suは不要でログディレクトリを作成してからansible-playbookコマンドを実行
->  cd ansible  
+> cd ansible  
 > mkdir ../log
 
 VMに接続して実行  
