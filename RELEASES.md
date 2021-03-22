@@ -2,6 +2,8 @@
 
 ## 1.2.0
 
+- Let's Encryptの証明書更新（DNS認証）を自動化したい
+  - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/324/
 - テスト用のデータベースを作成できるようしたい
   - https://dev.azure.com/nightonly/vagrant-ansible-origin/_workitems/edit/314/
 - SSHパスワード認証を設定で変更できるようにしたい
