@@ -299,7 +299,7 @@ railsapp-test_ansible
 ### Playbook実行
 
 Tips: VMからではなく、Macから直接実行する場合は、suは不要でログディレクトリを作成してからansible-playbookコマンドを実行
->  cd ansible  
+> cd ansible  
 > mkdir ../log
 
 VMに接続して実行  
@@ -322,119 +322,71 @@ $ exit
 
 各サーバーで実行（初回のみ）  
 ※下記のドメイン名・メールアドレスを変更して実行してください。  
-※複数のドメインを使用する場合は、certbot-autoの行を複数回実行してください。
+※複数のドメインを使用する場合は、certbotの行を複数回実行してください。
 ```
 # mv /etc/letsencrypt /etc/letsencrypt,`date +"%Y%m%d%H%M%S"`
-# cd /usr/bin
-# curl http://dl.eff.org/certbot-auto -o certbot-auto
-# chmod 755 certbot-auto
-# unset PYTHON_INSTALL_LAYOUT
 
 Apacheの場合
-# certbot-auto certonly --webroot -w /var/www/html -d test.mydomain -d www.test.mydomain --email admin@mydomain --agree-tos --debug
+# certbot certonly --webroot -w /var/www/html -d test.mydomain -d www.test.mydomain --email admin@mydomain --agree-tos --no-eff-email
 Nginxの場合
-# certbot-auto certonly --webroot -w /usr/share/nginx/html -d test.mydomain -d www.test.mydomain --email admin@mydomain --agree-tos --debug
+# certbot certonly --webroot -w /usr/share/nginx/html -d test.mydomain -d www.test.mydomain --email admin@mydomain --agree-tos --no-eff-email
 
-Is this ok [y/d/N]: y
-(Y)es/(N)o: y
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at:
-```
 
 Apacheの場合
-```
 # apachectl configtest
 Syntax OK
 # apachectl graceful
-```
 
 Nginxの場合
-```
 # nginx -t -c /etc/nginx/nginx.conf
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 # service nginx restart
 ```
 
-※更新(certbot-auto renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
-
-※メール「Please Confirm Your EFF Subscription」が届きます -> URLをクリック
+※更新(certbot renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
 
 #### マルチドメイン証明書の場合
 
+ConoHa DNSの例です。事前に下記を設定して、ansible-playbookコマンド(-t letsencrypt)を実行してください。  
+手動でDNS設定/更新を行う場合は、下記設定および--manual-auth-hookと--manual-cleanup-hookは不要です。
+
+ansible/hosts/対象環境
+```
+# ConoHa DNS  https://manage.conoha.jp/API/
+conoha_enable_letsencrypt=0
+conoha_identity_service=https://identity.tyo2.conoha.io/v2.0
+conoha_dns_service=https://dns-service.tyo2.conoha.io
+conoha_api_username=
+conoha_api_password=
+conoha_tenant_id=
+```
+
 各サーバーで実行（初回のみ）  
 ※下記のドメイン名・メールアドレスを変更して実行してください。  
-※複数のドメインを使用する場合は、certbot-autoの行を複数回実行してください。
+※複数のドメインを使用する場合は、certbotの行を複数回実行してください。
 ```
 # mv /etc/letsencrypt /etc/letsencrypt,`date +"%Y%m%d%H%M%S"`
-# cd /usr/bin
-# curl http://dl.eff.org/certbot-auto -o certbot-auto
-# chmod 755 certbot-auto
-# unset PYTHON_INSTALL_LAYOUT
-# certbot-auto certonly --manual -d test.mydomain -d *.test.mydomain --email admin@mydomain --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --debug
-Is this ok [y/d/N]: y
-(Y)es/(N)o: y
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Please deploy a DNS TXT record under the name
-_acme-challenge.test.mydomain with the following value:
-
-＜〜〜〜 文字列1 〜〜〜＞
-
-Before continuing, verify the record is deployed.
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-```
-
-表示されたTXTレコードをDNSサーバーに登録して、反映されてから[Enter]を押してください。  
-> $ nslookup -type=txt _acme-challenge.test.mydomain 8.8.8.8
-> _acme-challenge.test.mydomain	text = "＜〜〜〜 文字列1 〜〜〜＞"
-
-```
-Press Enter to Continue
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Please deploy a DNS TXT record under the name
-_acme-challenge.test.mydomain with the following value:
-
-＜〜〜〜 文字列2 〜〜〜＞
-
-Before continuing, verify the record is deployed.
-(This must be set up in addition to the previous challenges; do not remove,
-replace, or undo the previous challenge tasks yet. Note that you might be
-asked to create multiple distinct TXT records with the same name. This is
-permitted by DNS standards.)
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-```
-
-表示されたTXTレコードをDNSサーバーに`追加`登録して、反映されてから[Enter]を押してください。  
-> $ nslookup -type=txt _acme-challenge.test.mydomain 8.8.8.8
-> _acme-challenge.test.mydomain	text = "＜〜〜〜 文字列1 〜〜〜＞"
-> _acme-challenge.test.mydomain	text = "＜〜〜〜 文字列2 〜〜〜＞"
-
-```
-Press Enter to Continue
+# certbot certonly --manual --preferred-challenges dns -d test.mydomain -d *.test.mydomain --email admin@mydomain --agree-tos --no-eff-email --manual-auth-hook /usr/local/bin/conoha/create_dns_record.sh --manual-cleanup-hook /usr/local/bin/conoha/delete_dns_record.sh
 
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at:
-```
 
 Apacheの場合
-```
 # apachectl configtest
 Syntax OK
 # apachectl graceful
-```
 
 Nginxの場合
-```
 # nginx -t -c /etc/nginx/nginx.conf
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 # service nginx restart
 ```
 
-※更新(certbot-auto renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
-
-※メール「Please Confirm Your EFF Subscription」が届きます -> URLをクリック
+※更新(certbot renew)はバッチ(/etc/cron.weekly/renew_letsencrypt.cron)で定期的に実行されます。
 
 ### WordPress設置(例)
 

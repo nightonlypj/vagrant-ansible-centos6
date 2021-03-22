@@ -22,6 +22,8 @@
 - when: ansible_distribution == 'Amazon'
   name: (Amazon) yum -y install http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm
   yum: name=http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm state=present
+- name: yum -y --enablerepo=epel install jq
+  yum: name=jq state=present enablerepo=epel
 
 ### service ###
 - name: service abrt-ccpp stop; chkconfig abrt-ccpp off
