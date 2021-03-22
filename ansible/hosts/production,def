@@ -183,4 +183,11 @@ httpd_front_www_fullchain_file={{ httpd_front_fullchain_file }}
 #httpd_front_www_key_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/privkey.pem
 #httpd_front_www_chain_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/chain.pem
 #httpd_front_www_fullchain_file=/etc/letsencrypt/live/{{ httpd_front_www_servername }}/fullchain.pem
+# ConoHa DNS  https://manage.conoha.jp/API/
+conoha_enable_letsencrypt=0
+conoha_identity_service=https://identity.tyo2.conoha.io/v2.0
+conoha_dns_service=https://dns-service.tyo2.conoha.io
+conoha_api_username=
+conoha_api_password=
+conoha_tenant_id=
 ### END ###
