@@ -19,12 +19,12 @@ renew_certificate() {
 	# Workaround for https://stackoverflow.com/questions/38170100/letsencrypt-importerror-no-module-named-interface-on-amazon-linux-while-renewin
 	unset PYTHON_INSTALL_LAYOUT
 
-	ionice -c 2 -n 7 nice -n 19 certbot-auto renew > $1 2>&1
+	ionice -c 2 -n 7 nice -n 19 certbot renew > $1 2>&1
 	if [ $? -ne 0 ]; then
-		write_log 'ERROR' 'certbot-auto renew'
+		write_log 'ERROR' 'certbot renew'
 		return
 	fi
-	write_log 'INFO' 'certbot-auto renew'
+	write_log 'INFO' 'certbot renew'
 
 	state=`cat $1 | grep '(success)'`
 	if [ -z "$state" ]; then
