@@ -7,18 +7,18 @@ ATTR_CODE=622
 GROUP_NAME='root'
 
 error_msg=''
-write_log () {
+write_log() {
 	echo -e "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
 	[ $1 = 'ERROR' ] && error_msg="$error_msg[$1] $2\n"
 }
 
-send_error_mail () {
+send_error_mail() {
 	[ -z "$error_msg" ] && return
 	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
 	write_log 'INFO' 'Send error mail'
 }
 
-send_report_mail () {
+send_report_mail() {
 	if [ ! -e "$TARGET_PATH" ]; then
 		write_log 'ERROR' "Not found $TARGET_PATH"
 		return

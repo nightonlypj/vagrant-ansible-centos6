@@ -118,8 +118,8 @@ httpd_front_sub_servername=*.{{ httpd_front_servername }}
 httpd_front_www_servername=
 # Front access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
 front_access_control=0
-# (RailsAdmin)Admin access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
-rails_admin_access_control=0
+# Admin access control [0=None, 1=Allow IP only(allow-ip.inc), 2=Allow IP(allow-ip.inc) or Basic Auth(.htpasswd)]
+admin_access_control=0
 ### Load Balancer ###
 # No use
 httpd_ssl_is_80port=0
@@ -160,4 +160,11 @@ httpd_front_www_crt_file={{ httpd_front_crt_file }}
 httpd_front_www_key_file={{ httpd_front_key_file }}
 httpd_front_www_chain_file={{ httpd_front_chain_file }}
 httpd_front_www_fullchain_file={{ httpd_front_fullchain_file }}
+# ConoHa DNS  https://manage.conoha.jp/API/
+conoha_enable_letsencrypt=0
+conoha_identity_service=https://identity.tyo2.conoha.io/v2.0
+conoha_dns_service=https://dns-service.tyo2.conoha.io
+conoha_api_username=
+conoha_api_password=
+conoha_tenant_id=
 ### END ###
