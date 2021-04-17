@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BATCH_NAME='create_conoha_dns'
+BATCH_NAME='create_dns_record_conoha'
 LOG_FILE="/var/log/$BATCH_NAME.log"
 IDENTITY_SERVICE='{{ conoha_identity_service }}'
 DNS_SERVICE='{{ conoha_dns_service }}'
