@@ -1,0 +1,5 @@
+### START ###
+/var/log/delete_dns_record*.log {
+	missingok
+}
+### END ###
