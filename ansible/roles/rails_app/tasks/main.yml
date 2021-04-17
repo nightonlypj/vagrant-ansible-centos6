@@ -1,11 +1,12 @@
 ### yum ###
-- name: yum -y install libffi-devel readline-devel ruby sqlite-devel
+- name: yum -y install libffi-devel readline-devel ruby sqlite-devel graphviz
   yum: name={{ item }} state=present
   with_items:
     - libffi-devel
     - readline-devel
     - ruby
     - sqlite-devel
+    - graphviz
 
 - name: test ! -e /etc/yum.repos.d/yarn.repo
   stat: path=/etc/yum.repos.d/yarn.repo
