@@ -1,0 +1,5 @@
+### START ###
+/var/log/create_dns_record*.log {
+	missingok
+}
+### END ###
