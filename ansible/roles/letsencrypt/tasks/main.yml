@@ -43,3 +43,9 @@
   with_fileglob:
     - "templates/usr/local/bin/conoha/create_dns_record.sh"
     - "templates/usr/local/bin/conoha/delete_dns_record.sh"
+- when: conoha_enable_letsencrypt == 1
+  name: (ConoHa DNS) cd /etc/logrotate.d; cp /vagrant/ansible/roles/letsencrypt/templates/etc/logrotate.d/{create,delete}_dns_record ./; chmod 644 {create,delete}_dns_record; chown root:root {create,delete}_dns_record
+  template: src="{{ item }}" dest="/etc/logrotate.d/" mode=644 owner=root group=root backup=no
+  with_fileglob:
+    - "templates/etc/logrotate.d/create_dns_record"
+    - "templates/etc/logrotate.d/delete_dns_record"
